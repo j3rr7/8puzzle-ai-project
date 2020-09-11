@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
     * */
     protected Button b0,b1,b2,b3,b4,b5,b6,b7,b8,bSolve,bReset;
     protected Integer[] numbers = {0,1,2,3,4,5,6,7,8};
-    protected Integer[] boards = {-1,-1,-1,-1,-1,-1,-1,-1};
+    protected Integer[] boards = {-1,-1,-1,-1,-1,-1,-1,-1,-1};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,14 +59,6 @@ public class MainActivity extends AppCompatActivity {
             * */
             Button b = (Button) v;
             String num = b.getText().toString();
-
-            /*
-            * if its not zero check up down left right
-            * */
-            if (!num.equalsIgnoreCase("0"))
-            {
-
-            }
         }
     }
 
@@ -98,14 +90,14 @@ public class MainActivity extends AppCompatActivity {
         boards[7] = numbers[7];
         boards[8] = numbers[8];
 
-        b0.setText(boards[0]);
-        b1.setText(boards[1]);
-        b2.setText(boards[2]);
-        b3.setText(boards[3]);
-        b4.setText(boards[4]);
-        b5.setText(boards[5]);
-        b6.setText(boards[6]);
-        b7.setText(boards[7]);
-        b8.setText(boards[8]);
+        b0.setText( String.format("%s",boards[0]) );
+        b1.setText( String.format("%s",boards[1]) );
+        b2.setText( String.format("%s",boards[2]) );
+        b3.setText( String.format("%s",boards[3]) );
+        b4.setText( String.format("%s",boards[4]) );
+        b5.setText( String.format("%s",boards[5]) );
+        b6.setText( String.format("%s",boards[6]) );
+        b7.setText( String.format("%s",boards[7]) );
+        b8.setText( String.format("%s",boards[8]) );
     }
 }
