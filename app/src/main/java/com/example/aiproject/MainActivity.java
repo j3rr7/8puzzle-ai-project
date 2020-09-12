@@ -27,11 +27,9 @@ public class MainActivity extends AppCompatActivity {
     /*
     * DFS
     * */
-    ArrayList<Integer[]> listStateVisited = new ArrayList<>(); // Simpan
-    int depth = 1000;
-    boolean Solved = false;
-    Stack<Integer[]> start_state = new Stack<Integer[]>();
-
+    class DFS{
+        
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -168,13 +166,6 @@ public class MainActivity extends AppCompatActivity {
         return (n >= 0 && n <= 8);
     }
 
-    public boolean CheckRecurring(Integer[] boards)
-    {
-        if (listStateVisited.contains(boards))
-            return false;
-        return true;
-    }
-
     public void Solve()
     {
         /*
@@ -225,33 +216,6 @@ public class MainActivity extends AppCompatActivity {
             {
                 arr.get(i).setBackgroundColor(Color.argb(170,179,153,255)); // biru
             }
-        }
-    }
-
-    private void BFS()
-    {
-
-    }
-
-    private void DFS(Integer[] boards)
-    {
-        start_state.add(boards);
-        listStateVisited.add(boards);
-        while (!start_state.empty())
-        {
-            Integer[] now = start_state.pop();
-            if (now == finished_state)
-            {
-                Solved = true;
-
-                break;
-            }
-            if (listStateVisited.contains(now))
-            {
-                continue;
-            }
-            listStateVisited.add(now);
-//expand bawah
         }
     }
 }
