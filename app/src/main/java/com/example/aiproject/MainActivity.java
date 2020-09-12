@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Stack;
 
 public class MainActivity extends AppCompatActivity {
     /*
@@ -18,9 +21,17 @@ public class MainActivity extends AppCompatActivity {
     * */
     protected Button b0,b1,b2,b3,b4,b5,b6,b7,b8,bSolve,bReset;
     protected Integer[] numbers = {0,1,2,3,4,5,6,7,8};
-    protected Integer[] boards = {-1,-1,-1,-1,-1,-1,-1,-1,-1};
+    protected Integer[] boards = {-1,-1,-1,-1,-1,-1,-1,-1,-1}; // board = posisi number
+    protected Integer[] finished_state = {1,2,3,4,5,6,7,8,0};
 
-    protected Integer[] finishState = {0,1,2,3,4,5,6,7,8};
+    /*
+    * DFS
+    * */
+    ArrayList<Integer[]> listStateVisited = new ArrayList<>(); // Simpan
+    int depth = 1000;
+    boolean Solved = false;
+    Stack<Integer[]> start_state = new Stack<Integer[]>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,6 +168,12 @@ public class MainActivity extends AppCompatActivity {
         return (n >= 0 && n <= 8);
     }
 
+    public boolean CheckRecurring(Integer[] boards)
+    {
+        if (listStateVisited.contains(boards))
+            return false;
+        return true;
+    }
 
     public void Solve()
     {
@@ -189,19 +206,52 @@ public class MainActivity extends AppCompatActivity {
 
     public void RefreshBoard()
     {
-        ArrayList<Button> arr = new ArrayList<Button>(Arrays.asList(b0,b1,b2,b3,b4,b5,b6,b7,b8));
+        /*
+        * List all button into array for further used
+        * Get the number 0 index from the boards
+        * set the text of the buttons as the same as board
+        * set the background of 0 number to differentiate the color
+        */
+        ArrayList<Button> arr = new ArrayList<>(Arrays.asList(b0,b1,b2,b3,b4,b5,b6,b7,b8));
         int zeroIndex = Arrays.asList(boards).indexOf(0);
         for (int i = 0; i<9; i++)
         {
             arr.get(i).setText(String.format("%s",boards[i]));
             if (i != zeroIndex)
             {
-                arr.get(i).setBackgroundColor(Color.argb(170,255,153,153));
+                arr.get(i).setBackgroundColor(Color.argb(170,255,153,153)); // merah
             }
             else
             {
-                arr.get(i).setBackgroundColor(Color.argb(170,179,153,255));
+                arr.get(i).setBackgroundColor(Color.argb(170,179,153,255)); // biru
             }
+        }
+    }
+
+    private void BFS()
+    {
+
+    }
+
+    private void DFS(Integer[] boards)
+    {
+        start_state.add(boards);
+        listStateVisited.add(boards);
+        while (!start_state.empty())
+        {
+            Integer[] now = start_state.pop();
+            if (now == finished_state)
+            {
+                Solved = true;
+
+                break;
+            }
+            if (listStateVisited.contains(now))
+            {
+                continue;
+            }
+            listStateVisited.add(now);
+//expand bawah
         }
     }
 }
