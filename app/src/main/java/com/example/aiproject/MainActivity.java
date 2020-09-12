@@ -14,20 +14,36 @@ import java.util.Collections;
 
 public class MainActivity extends AppCompatActivity {
     /*
-    * Initialize Variabels to be used
-    * */
+     * Initialize Variabels to be used
+     * */
     protected Button b0,b1,b2,b3,b4,b5,b6,b7,b8,bSolve,bReset;
     protected Integer[] numbers = {0,1,2,3,4,5,6,7,8};
     protected Integer[] boards = {-1,-1,-1,-1,-1,-1,-1,-1,-1};
+    protected Integer[][] wincond ;
 
     int [][] movement = {{0,-1},{0,1},{0,1},{-1,0} }; //arah jarum jam dari atas
     Button[][] map = new Button[3][3];
-    ArrayList<Button[][]> SavedState = new ArrayList<>();
+    Integer[][] mapInt = new Integer[3][3];
+    ArrayList<Button[][]> SavedStaasd = new ArrayList<>();
+    ArrayList<Integer[][]> SavedState = new ArrayList<>();
+    ArrayList<Integer[][]> FinishState = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        int ctr =1;
+        for(int i=0;i<3;i++){
+            for (int j=0;j<3;j++){
+                if(ctr < 9 ){
+                    wincond[i][j] = ctr;
+                    ctr++;
+                }else if(ctr==9){
+                    wincond[i][j] = 0;
+                }
+            }
+        }
 
         map[0][0] = findViewById(R.id.button0);
         map[0][1] = findViewById(R.id.button1);
@@ -42,14 +58,20 @@ public class MainActivity extends AppCompatActivity {
         bSolve = findViewById(R.id.buttonSolve);
         bReset = findViewById(R.id.buttonReset);
 
+        for(int i=0;i<3;i++){
+            for (int j=0;j<3;j++){
+                mapInt[i][j] =  Integer.parseInt(map[i][j].getText().toString());
+            }
+        }
+
         Reset();
     }
 
     public void butClick(View v)
     {
         /*
-        * Get every button pressed id and filter the button
-        * */
+         * Get every button pressed id and filter the button
+         * */
         int id = v.getId();
         if(id == R.id.buttonSolve)
         {
@@ -62,8 +84,8 @@ public class MainActivity extends AppCompatActivity {
         else
         {
             /*
-            * Temporary var to get the button text
-            * */
+             * Temporary var to get the button text
+             * */
             Button b = (Button) v;
             String num = b.getText().toString();
         }
@@ -80,103 +102,20 @@ public class MainActivity extends AppCompatActivity {
         map[2][1] = findViewById(R.id.button7);
         map[2][2] = findViewById(R.id.button8);
     }
-    public int[] findZero(){
-        int[] xy = new int[2]; //[0] -> X  , [1]-> Y
-        signButton(); //bek e lali naruh button e
-        for (int i=0;i<3;i++){
-            for (int j=0;j<3;j++){
-                if(map[i][j].getText().toString().equalsIgnoreCase("0")){
-                    xy[0] = j ;
-                    xy[1] = i ;
-                    break;
-                }
-            }
-        }
-
-
-
-        return xy;
-    }
-    public Boolean cekMovement(int xMap,int yMap,int xMove,int yMove){
-        Boolean aman=true;
-        if(xMap+xMove <0 || xMap+xMove >3) aman=false;
-        if(yMap+yMove <0 || yMap+ yMove >3) aman=false;
-        return aman;
-    };
-
-    public void swapButton(int moveIdx){
-
-    }
-
-
-    //iki  kudu dianggep seolah" ngeswap se
-    public Boolean cekRecuring(){
-        signButton(); //bek e lali var e map
-
-
-
-        return false;
-    }
-
-    public Boolean winCondition(){
-        Boolean win = true;
-//        123
-//        456
-//        780
-        int ctr = 1;
-       for(int i=0;i<3;i++){
-           for(int j=0;j<3;j++){
-               if(!map[i][j].getText().toString().equalsIgnoreCase(ctr+"")) win=false;
-                ctr++;
-                if(ctr==9)ctr=0;
-           }
-       }
-        return win;
-    }
-
-//            ngecek renegade movement
-//                    nyimpen state yang pernah
-//                    kalo ga renegade ,misal diswap recursion gak.
-//                        kalo engga cek win , if not win then cek anak lain e
-//                    setelah cek semua dan engga win , lanjut ke anak pertama
-    public Boolean BFS(int x ,int y){ //buat xy  buat  posisi 0 e
-        if(winCondition()){
-            //yey
-            return true;
-        }else{
-            int ctrMove=0;
-
-
-            return false;
-        }
-
-
-    }
     public void Solve()
     {
         /*
-        * To Be Added Solver function
-        * BFS
-        * DFS
-        * (+)
-        * */
-
-        int[] zeroLoc = findZero();
-        //let the magic do the work
-        BFS(zeroLoc[0],zeroLoc[1]);
-
-
-
-
-
-
+         * To Be Added Solver function
+         * BFS
+         * DFS
+         * (+)
+         * */
     }
-
     public void Reset()
     {
         /*
-        * Reset State of button and assign new number for each Button
-        * */
+         * Reset State of button and assign new number for each Button
+         * */
         // Random Every Number in a List
         Collections.shuffle(Arrays.asList(numbers));
 
@@ -200,4 +139,78 @@ public class MainActivity extends AppCompatActivity {
         b7.setText( String.format("%s",boards[7]) );
         b8.setText( String.format("%s",boards[8]) );
     }
+
+    public Boolean cekWin(Integer[][] board){
+        if(board == wincond){
+            return  true;
+        }else{
+            return false;
+        }
+    }
+
+    public void saveState(Integer[][] board){
+        SavedState.add(board);
+    }
+
+    public Boolean cekMovement(int x,int y , int xMove, int yMove){
+        Boolean temp = true;
+        if (x+xMove <0 || x+xMove>=3)temp = false;
+        if (y+yMove <0 || y+yMove>=3)temp = false;
+        return  temp;
+    }
+
+
+    public Boolean cekRecuring(Integer[][] board,int x,int y,int xMove,int yMove){
+        //xy posisi 0
+        Boolean temp = false;
+        if(cekMovement(x,y,xMove,yMove)==true){ //engga renegade
+            //swap
+            int angka=board[yMove][xMove];
+            board[y+yMove][x+xMove]=board[y][x];
+            board[y][x] = angka;
+
+            if(SavedState.contains(board)){
+                temp=false;
+            }else{
+                temp = true;
+            }
+        }
+
+
+        return temp;
+    }
+
+
+    public Integer[][] swap(Integer[][] papan , int x, int y , int xMove,int yMove){
+        int angka=papan[yMove][xMove];
+        papan[y+yMove][x+xMove]=papan[y][x];
+        papan[y][x] = angka;
+        return papan;
+    }
+
+    public Boolean DFS(int x,int y,Integer[][] papan){ //xy  lokasi 0
+        if(cekWin(papan)){
+            return true;
+        }else{
+            saveState(papan);
+            int ctr=0;
+            Boolean done=false;
+            while(ctr<4 && done==false ){
+                if(cekMovement(x,y,movement[ctr][0],movement[ctr][1]) &&
+                        cekRecuring(mapInt,x,y,movement[ctr][0],movement[ctr][1])){
+                    papan = swap(papan,x,y,x+movement[ctr][0],x+movement[ctr][1]);
+                    done = DFS(x+movement[ctr][0],y+movement[ctr][1],papan);
+                    if(done ==true){
+                        FinishState.add(papan);
+                    }
+                    ctr++;
+                }
+            }
+            return done;
+        }
+
+
+    }
+
+
 }
