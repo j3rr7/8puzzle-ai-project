@@ -1,21 +1,45 @@
 package com.example.aiproject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class node {
-    node parent;
-    ArrayList<node> children = new ArrayList<>();
-    int depth;
     Integer[] boards = new Integer[9];
+    node parent;
+    int depth;
 
-    public node(node parent, ArrayList<node> children, int depth, Integer[] boards) {
+    public node(Integer[] boards, node parent, int depth) {
+        this.boards = boards;
         this.parent = parent;
-        this.children = children;
         this.depth = depth;
+    }
+
+    public int findZeroIndex()
+    {
+        return Arrays.asList(boards).indexOf(0);
+    }
+
+    public Integer[] getBoards() {
+        return boards;
+    }
+
+    public void setBoards(Integer[] boards) {
         this.boards = boards;
     }
-    public node(ArrayList<node> children, int depth, Integer[] boards) {
-        this(null, children, depth, boards);
+
+    public node getParent() {
+        return parent;
     }
-    
+
+    public void setParent(node parent) {
+        this.parent = parent;
+    }
+
+    public int getDepth() {
+        return depth;
+    }
+
+    public void setDepth(int depth) {
+        this.depth = depth;
+    }
 }

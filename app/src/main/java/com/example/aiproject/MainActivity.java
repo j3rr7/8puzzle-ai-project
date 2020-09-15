@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Stack;
@@ -27,8 +28,24 @@ public class MainActivity extends AppCompatActivity {
     /*
     * DFS
     * */
-    class DFS{
-        
+    class NodeState
+    {
+        Integer[] boards = new Integer[9];
+        int depth = 0;
+        ArrayList<NodeState> children = new ArrayList<>();
+        NodeState parent;
+
+        public NodeState(Integer[] boards, int depth, ArrayList<NodeState> children, NodeState parent) {
+            this.boards = boards;
+            this.depth = depth;
+            this.children = children;
+            this.parent = parent;
+        }
+    }
+
+    class DFS
+    {
+
     }
 
     @Override
@@ -131,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
     {
         if (IsThatValid(num - 1)) // -1 is constraint to check left
         {
-            if (boards[num - 1] == 0)
+            if (boards[num - 1] == 0 && num % 3 > 0)
             {
                 // Move left
                 boards[num - 1] = boards[num - 1]^boards[num]^(boards[num] = boards[num - 1]);
@@ -146,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
     {
         if (IsThatValid(num + 1)) // +1 is constraint to check right
         {
-            if (boards[num + 1] == 0)
+            if (boards[num + 1] == 0 && num % 3 > 0)
             {
                 // Move right
                 boards[num + 1] = boards[num + 1]^boards[num]^(boards[num] = boards[num + 1]);
