@@ -9,12 +9,7 @@ import android.widget.Button;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Stack;
 
 public class MainActivity extends AppCompatActivity {
     /*
@@ -22,31 +17,11 @@ public class MainActivity extends AppCompatActivity {
     * */
     protected Button b0,b1,b2,b3,b4,b5,b6,b7,b8,bSolve,bReset;
     protected Integer[] numbers = {0,1,2,3,4,5,6,7,8};
-    protected Integer[] boards = {-1,-1,-1,-1,-1,-1,-1,-1,-1}; // board = posisi number
-    protected Integer[] finished_state = {1,2,3,4,5,6,7,8,0};
+    protected Integer[][] boards = {{-1,-1,-1},{-1,-1,-1},{-1,-1,-1}}; // board = posisi number
 
     /*
-    * DFS
+    * STATE CLASS
     * */
-    class NodeState
-    {
-        Integer[] boards = new Integer[9];
-        int depth = 0;
-        ArrayList<NodeState> children = new ArrayList<>();
-        NodeState parent;
-
-        public NodeState(Integer[] boards, int depth, ArrayList<NodeState> children, NodeState parent) {
-            this.boards = boards;
-            this.depth = depth;
-            this.children = children;
-            this.parent = parent;
-        }
-    }
-
-    class DFS
-    {
-
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,99 +65,66 @@ public class MainActivity extends AppCompatActivity {
             * Temporary var to get the button text
             * */
             Button b = (Button) v;
-            int num = Integer.parseInt(b.getText().toString());
+            String num_ = b.getText().toString();
+            int num = 0;
+            if (!num_.isEmpty())
+                num = Integer.parseInt(num_);
+            int[] idx_now = getIndex2Dto2D(boards, num);
 
-            // If its not zero or 0
-            if (num != 0)
-            {
-                System.out.println("Num: "+num + "\nIndex :" + Arrays.asList(boards).indexOf(num));
+            System.out.println( String.format("DEBUGMOVE %s , %s", idx_now[0],idx_now[1]) );
 
-                // Check and move board :V maybe ill fix this later -Jere_ID
-                if(     !CheckLeft(boards, Arrays.asList(boards).indexOf(num)) &&
-                        !CheckRight(boards, Arrays.asList(boards).indexOf(num)) &&
-                        !CheckUp(boards, Arrays.asList(boards).indexOf(num)) &&
-                        !CheckDown(boards, Arrays.asList(boards).indexOf(num)))
-                {
-
-                }
-            }
+            // MOVE UP IF VALID
+            if (isValidMove(idx_now[0]+1,idx_now[1]))
+                MoveUp(boards, idx_now[0],idx_now[1]);
+            // MOVE DOWN IF VALID
+            if (isValidMove(idx_now[0]-1,idx_now[1]))
+                MoveDown(boards, idx_now[0],idx_now[1]);
+            // MOVE LEFT IF VALID
+            if (isValidMove(idx_now[0],idx_now[1]-1))
+                MoveLeft(boards,idx_now[0],idx_now[1]);
+            // MOVE RIGHT IF VALID
+            if (isValidMove(idx_now[0],idx_now[1]+1))
+                MoveRight(boards,idx_now[0],idx_now[1]);
             RefreshBoard();
         }
     }
 
+    private void MoveUp(Integer[][] boards, int x, int y)
+    {
+        if (boards[x+1][y] == 0)
+        {
+            boards[x][y] = boards[x][y]^boards[x+1][y]^(boards[x+1][y] = boards[x][y]); //SWAP
+        }
+    }
+    private void MoveDown(Integer[][] boards, int x, int y)
+    {
+        if (boards[x-1][y] == 0)
+        {
+            boards[x][y] = boards[x][y]^boards[x-1][y]^(boards[x-1][y] = boards[x][y]); //SWAP
+        }
+    }
+    private void MoveLeft(Integer[][] boards, int x, int y)
+    {
+        if (boards[x][y-1] == 0)
+        {
+            boards[x][y] = boards[x][y]^boards[x][y-1]^(boards[x][y-1] = boards[x][y]); //SWAP
+        }
+    }
+    private void MoveRight(Integer[][] boards, int x, int y)
+    {
+        if (boards[x][y+1] == 0)
+        {
+            boards[x][y] = boards[x][y]^boards[x][y+1]^(boards[x][y+1] = boards[x][y]); //SWAP
+        }
+    }
+
+
+    private boolean isValidMove(int i, int j)
+    {
+        return ((i>=0&&i<3) && (j>=0&&j<3));
+    }
+
     // a = a^b^(b = a); SWAP
-    /*
-    * All check function return false if cant move or not zero
-    * */
-    public boolean CheckUp(Integer[] boards, int num)
-    {
-        if (IsThatValid(num - 3)) // -3 is constraint to check up
-        {
-            if (boards[num - 3] == 0)
-            {
-                // Move up
-                boards[num - 3] = boards[num - 3]^boards[num]^(boards[num] = boards[num - 3]);
-                return true;
-            }
-            else
-                return false;
-        }
-        return false;
-    }
-    public boolean CheckDown(Integer[] boards, int num)
-    {
-        if (IsThatValid(num + 3)) // +3 is constraint to check down
-        {
-            if (boards[num + 3] == 0)
-            {
-                // Move down
-                boards[num + 3] = boards[num + 3]^boards[num]^(boards[num] = boards[num + 3]);
-                return true;
-            }
-            else
-                return false;
-        }
-        return false;
-    }
-    public boolean CheckLeft(Integer[] boards, int num)
-    {
-        if (IsThatValid(num - 1)) // -1 is constraint to check left
-        {
-            if (boards[num - 1] == 0 && num % 3 > 0)
-            {
-                // Move left
-                boards[num - 1] = boards[num - 1]^boards[num]^(boards[num] = boards[num - 1]);
-                return true;
-            }
-            else
-                return false;
-        }
-        return false;
-    }
-    public boolean CheckRight(Integer[] boards, int num)
-    {
-        if (IsThatValid(num + 1)) // +1 is constraint to check right
-        {
-            if (boards[num + 1] == 0 && num % 3 > 0)
-            {
-                // Move right
-                boards[num + 1] = boards[num + 1]^boards[num]^(boards[num] = boards[num + 1]);
-                return true;
-            }
-            else
-                return false;
-        }
-        return false;
-    }
-
-    /*
-    * IsThatValid(num) return true if index between 0 and 8
-    * */
-    public boolean IsThatValid(int n)
-    {
-        return (n >= 0 && n <= 8);
-    }
-
     public void Solve()
     {
         /*
@@ -201,15 +143,15 @@ public class MainActivity extends AppCompatActivity {
         // Random Every Number in a List
         Collections.shuffle(Arrays.asList(numbers));
 
-        boards[0] = numbers[0];
-        boards[1] = numbers[1];
-        boards[2] = numbers[2];
-        boards[3] = numbers[3];
-        boards[4] = numbers[4];
-        boards[5] = numbers[5];
-        boards[6] = numbers[6];
-        boards[7] = numbers[7];
-        boards[8] = numbers[8];
+        boards[0][0] = numbers[0];
+        boards[0][1] = numbers[1];
+        boards[0][2] = numbers[2];
+        boards[1][0] = numbers[3];
+        boards[1][1] = numbers[4];
+        boards[1][2] = numbers[5];
+        boards[2][0] = numbers[6];
+        boards[2][1] = numbers[7];
+        boards[2][2] = numbers[8];
     }
 
     public void RefreshBoard()
@@ -221,18 +163,63 @@ public class MainActivity extends AppCompatActivity {
         * set the background of 0 number to differentiate the color
         */
         ArrayList<Button> arr = new ArrayList<>(Arrays.asList(b0,b1,b2,b3,b4,b5,b6,b7,b8));
-        int zeroIndex = Arrays.asList(boards).indexOf(0);
-        for (int i = 0; i<9; i++)
+        int ctr = 0;
+        for (int i = 0; i < arr.size(); i++)
         {
-            arr.get(i).setText(String.format("%s",boards[i]));
-            if (i != zeroIndex)
+            if (i == 3 || i == 6 )
+                ctr++;
+            arr.get(i).setText( String.format("%s", boards[ctr][i%3]) );
+        }
+
+        int zero_index = getIndex2Dto1D(boards, 0);
+        for (int i = 0; i < arr.size(); i++)
+        {
+            arr.get(i).setBackgroundColor(Color.argb(170,179,153,255)); // biru
+            if (i == zero_index)
             {
                 arr.get(i).setBackgroundColor(Color.argb(170,255,153,153)); // merah
-            }
-            else
-            {
-                arr.get(i).setBackgroundColor(Color.argb(170,179,153,255)); // biru
+                arr.get(i).setText(""); //Remove 0 from boards
             }
         }
+    }
+
+    private int getIndex2Dto1D(Integer[][] boards, int idx)
+    {
+        /*
+        * GET INDEX 0 FROM 2D ARRAY AND CONVERT TO 1D ARRAY INDEX
+        * */
+        int[] b = {-1,-1};
+        for (int i=0;i<3;i++)
+        {
+            for (int j=0;j<3;j++)
+            {
+                if (boards[i][j] == idx)
+                {
+                    b[0] = i;
+                    b[1] = j;
+                }
+            }
+        }
+        return (b[0] * 3 + b[1]); // return 0-25
+    }
+
+    private int[] getIndex2Dto2D(Integer[][] boards, int idx)
+    {
+        /*
+         * GET INDEX 0 FROM 2D ARRAY AND CONVERT TO 2D ARRAY INDEX
+         * */
+        int[] b = {-1,-1};
+        for (int i=0;i<3;i++)
+        {
+            for (int j=0;j<3;j++)
+            {
+                if (boards[i][j] == idx)
+                {
+                    b[0] = i;
+                    b[1] = j;
+                }
+            }
+        }
+        return b; // return i,j
     }
 }
