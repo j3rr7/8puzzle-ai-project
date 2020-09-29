@@ -193,7 +193,10 @@ public class MainActivity extends AppCompatActivity {
         if(tArr == win){
             System.out.println("win");
         }else{
+            // karna ga win , state now dimasukin list e recuring
             recur.add(tArr);
+
+            //ndapetin child dari state sekarang buat dimasukno ke eueue
             tState.setChild(recur);
             if(tState.getDown()!=null){
                 queue.add(new State(tState.getDown()));
@@ -216,11 +219,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
         System.out.println("exit");
-
-
-
-
-
     }
     public void Solve()
     {
