@@ -78,11 +78,6 @@ public class State {
             }
         }
 
-        System.out.println("now awal");
-        for (int i=0;i<3;i++){
-            System.out.println(now[i][0]+"-"+now[i][1]+"-"+now[i][2]);
-        }
-
 
 
 
@@ -90,11 +85,8 @@ public class State {
             int angka = temp1[y-1][x];
             temp1[y-1][x]=temp1[y][x];
             temp1[y][x]=angka;
-            System.out.println("Up child is available");
             up = temp1;
-            for (int i=0;i<3;i++){
-                    System.out.println(up[i][0]+"-"+up[i][1]+"-"+up[i][2]);
-            }
+
             // lek dee gagal , up e tetep null
         }catch (Exception e){
             up =null;
@@ -109,11 +101,7 @@ public class State {
             int angka = temp2[y+1][x];
             temp2[y+1][x]=temp2[y][x];
             temp2[y][x]=angka;
-            System.out.println("Down child is available");
             down = temp2;
-            for (int i=0;i<3;i++){
-                System.out.println(down[i][0]+"-"+down[i][1]+"-"+down[i][2]);
-            }
         }catch (Exception e){
             down = null;
         }
@@ -123,12 +111,7 @@ public class State {
             int angka = temp3[y][x-1];
             temp3[y][x-1]=temp3[y][x];
             temp3[y][x]=angka;
-            System.out.println("Left child is available");
             left = temp3;
-
-            for (int i=0;i<3;i++){
-                System.out.println(left[i][0]+"-"+left[i][1]+"-"+left[i][2]);
-            }
 
         }catch (Exception e){
             left = null;
@@ -140,21 +123,13 @@ public class State {
             int angka = temp4[y][x+1];
             temp4[y][x+1]=temp4[y][x];
             temp4[y][x]=angka;
-            System.out.println("Right child is available");
             right = temp4;
 
-            for (int i=0;i<3;i++){
-                System.out.println(right[i][0]+"-"+right[i][1]+"-"+right[i][2]);
-            }
 
         }catch (Exception e){
             right = null;
         }
 
-        System.out.println("now e akhir");
-        for (int i=0;i<3;i++){
-            System.out.println(now[i][0]+"-"+now[i][1]+"-"+now[i][2]);
-        }
 
 
 

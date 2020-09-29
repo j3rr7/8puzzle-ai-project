@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -175,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         State tState;  //temp
-        Integer[][] tArr;
+        Integer[][] tArr = new Integer[3][3];
         State rootState = new State(root);
         queue.add(rootState);
     int step = 0;
@@ -185,11 +186,17 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("sss");
     }
 
-    while(!queue.isEmpty() && step<=2){
+    while(!queue.isEmpty() && step<5 ){
         step++;
         System.out.println("Step : "+step);
         tState = queue.remove();
-        tArr = tState.getNow(); //dapet papan parent
+
+        for (int i=0;i<3;i++){
+            for(int j=0;j<3;j++){
+                tArr[i][j] = tState.getNow()[i][j];
+            }
+        }
+
         if(tArr == win){
             System.out.println(" -----win---------");
             System.out.println(" -----win---------");
@@ -212,57 +219,55 @@ public class MainActivity extends AppCompatActivity {
 
 //             cek renagade di class
             if(tState.getLeft()!=null && cekContain(recur,tState.getLeft()) ){
-
                 tState.setLeft(null);
-                System.out.println("setNull left");
-            } else{
-                System.out.println("add Left to recur");
+
+            } else if(tState.getLeft()!=null && !cekContain(recur,tState.getLeft())){
                 recur.add(tState.getLeft());
             }
 
+
             if(tState.getRight()!=null && cekContain(recur,tState.getRight()) ){
                 tState.setRight(null);
-                System.out.println("setNull RIGHT");
-            } else{
-                System.out.println("add right to recur");
+
+            } else if(tState.getRight()!=null && !cekContain(recur,tState.getRight())){
+
                 recur.add(tState.getRight());
             }
+
+
             if(tState.getUp()!=null && cekContain(recur,tState.getUp())  ){
                 tState.setUp(null);
-                System.out.println("setNull up");
-            } else{
-                System.out.println("add up to recur");
+
+            } else if(tState.getUp()!=null && !cekContain(recur,tState.getUp())){
+
                 recur.add(tState.getUp());
             }
 
             if(tState.getDown()!=null && cekContain(recur,tState.getDown())  ){
                 tState.setDown(null);
-                System.out.println("setNull Down");
-            } else{
-                System.out.println("add Down to recur");
+
+            } else if( tState.getDown()!=null && !cekContain(recur,tState.getDown())){
+
                 recur.add(tState.getDown());
             }
 
-            System.out.println("Recur size"+recur.size());
 
-
-            //nambah queueu
 //---------------------------------------------------------------------
             if(tState.getDown()!=null){
                 queue.add(new State(tState.getDown()));
-                System.out.println("addDown");
+
             }
             if(tState.getUp()!=null){
                 queue.add(new State(tState.getUp()));
-                System.out.println("addUp");
+
             }
             if(tState.getLeft()!=null){
                 queue.add(new State(tState.getLeft()));
-                System.out.println("addLeft");
+
             }
             if(tState.getRight()!=null){
                 queue.add(new State(tState.getRight()));
-                System.out.println("addRight");
+
             }
 
         }
@@ -275,6 +280,7 @@ public class MainActivity extends AppCompatActivity {
        // kalo false ga contain
         Boolean cek=false;
         for(int i=0;i<list.size();i++){
+
             if(list.get(i) == state){
                 cek=true;
                 break;
@@ -294,7 +300,26 @@ public class MainActivity extends AppCompatActivity {
          * DFS
          * (+)
          * */
-        BFS();
+        int[][] temp1 = new int[3][3];
+        int[][] temp2 = new int[3][3];
+        for(int i=0 ;i<3;i++){
+            for(int j=0;j<3;j++){
+                temp1[i][j]=i+j;
+                temp2[i][j]=i+j;
+            }
+        }
+        ArrayList<int[][]>list = new ArrayList<>();
+        list.add(temp1);
+
+        if(list.contains(temp1)){
+            System.out.println("ada");
+        }
+        System.out.println(list.size());
+
+
+
+
+//        BFS();
 
 
     }
