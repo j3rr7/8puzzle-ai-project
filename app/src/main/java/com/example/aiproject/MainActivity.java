@@ -19,9 +19,9 @@ public class MainActivity extends AppCompatActivity {
     protected Button b0,b1,b2,b3,b4,b5,b6,b7,b8,bSolve,bReset;
     protected Integer[] numbers = {0,1,2,3,4,5,6,7,8};
     protected Integer[] boards = {-1,-1,-1,-1,-1,-1,-1,-1,-1};
-    protected Integer[][] wincond ;
+    protected Integer[][] wincond =new Integer[3][3];
 
-    int [][] movement = {{0,-1},{0,1},{0,1},{-1,0} }; //arah jarum jam dari atas
+    int [][] movement = {{0,-1},{1,0},{0,1},{-1,0} }; //arah jarum jam dari atas
     Button[][] map = new Button[3][3];
     Integer[][] mapInt = new Integer[3][3];
     ArrayList<Button[][]> SavedStaasd = new ArrayList<>();
@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
         map[2][0] = findViewById(R.id.button6);
         map[2][1] = findViewById(R.id.button7);
         map[2][2] = findViewById(R.id.button8);
+        Reset();
 
         bSolve = findViewById(R.id.buttonSolve);
         bReset = findViewById(R.id.buttonReset);
@@ -64,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        Reset();
     }
 
     public void butClick(View v)
@@ -110,6 +110,10 @@ public class MainActivity extends AppCompatActivity {
          * DFS
          * (+)
          * */
+
+        int[] loc = getXY(mapInt);
+        DFS(loc[0],loc[1],mapInt);
+
     }
     public void Reset()
     {
@@ -129,17 +133,39 @@ public class MainActivity extends AppCompatActivity {
         boards[7] = numbers[7];
         boards[8] = numbers[8];
 
-        b0.setText( String.format("%s",boards[0]) );
-        b1.setText( String.format("%s",boards[1]) );
-        b2.setText( String.format("%s",boards[2]) );
-        b3.setText( String.format("%s",boards[3]) );
-        b4.setText( String.format("%s",boards[4]) );
-        b5.setText( String.format("%s",boards[5]) );
-        b6.setText( String.format("%s",boards[6]) );
-        b7.setText( String.format("%s",boards[7]) );
-        b8.setText( String.format("%s",boards[8]) );
+        int ctr=0;
+        for (int i=0 ;i<3;i++){
+            for (int j=0;j<3;j++){
+                map[i][j].setText(String.format("%s",boards[ctr]));
+                ctr++;
+            }
+        }
+
+//        b0.setText( String.format("%s",boards[0]) );
+//        b1.setText( String.format("%s",boards[1]) );
+//        b2.setText( String.format("%s",boards[2]) );
+//        b3.setText( String.format("%s",boards[3]) );
+//        b4.setText( String.format("%s",boards[4]) );
+//        b5.setText( String.format("%s",boards[5]) );
+//        b6.setText( String.format("%s",boards[6]) );
+//        b7.setText( String.format("%s",boards[7]) );
+//        b8.setText( String.format("%s",boards[8]) );
     }
 
+    public int[] getXY(Integer[][] papan){
+        int[] loc = new int[2];
+        for(int i=0;i<3;i++){
+            for(int j=0;j<3;j++){
+                if(papan[i][j]==0){
+                    loc[0]=j;
+                    loc[1]=i;
+                }
+            }
+        }
+
+        return loc;
+
+    }
     public Boolean cekWin(Integer[][] board){
         if(board == wincond){
             return  true;
@@ -158,18 +184,26 @@ public class MainActivity extends AppCompatActivity {
         if (y+yMove <0 || y+yMove>=3)temp = false;
         return  temp;
     }
-
+    public Boolean cekContain(Integer[][] board){
+        for(int i=0;i<SavedState.size();i++){
+            if(SavedState.get(i) == board){
+                return false;
+            }
+        }
+        return true;
+    }
 
     public Boolean cekRecuring(Integer[][] board,int x,int y,int xMove,int yMove){
         //xy posisi 0
         Boolean temp = false;
         if(cekMovement(x,y,xMove,yMove)==true){ //engga renegade
             //swap
-            int angka=board[yMove][xMove];
+            int angka=board[y+yMove][x+xMove];
             board[y+yMove][x+xMove]=board[y][x];
             board[y][x] = angka;
 
-            if(SavedState.contains(board)){
+            //ngecek savedState sama board yang sudah diswap
+            if(cekContain(board)){
                 temp=false;
             }else{
                 temp = true;
@@ -190,21 +224,28 @@ public class MainActivity extends AppCompatActivity {
 
     public Boolean DFS(int x,int y,Integer[][] papan){ //xy  lokasi 0
         if(cekWin(papan)){
+            for(int i=0;i<3;i++){
+                for (int j=0;j<3;j++){
+                    map[i][j].setText(papan[i][j]);
+                }
+            }
             return true;
         }else{
             saveState(papan);
             int ctr=0;
             Boolean done=false;
             while(ctr<4 && done==false ){
-                if(cekMovement(x,y,movement[ctr][0],movement[ctr][1]) &&
-                        cekRecuring(mapInt,x,y,movement[ctr][0],movement[ctr][1])){
-                    papan = swap(papan,x,y,x+movement[ctr][0],x+movement[ctr][1]);
+                Boolean cekMove =cekMovement(x,y,movement[ctr][0],movement[ctr][1]);
+                Boolean cekRec =  cekRecuring(papan,x,y,movement[ctr][0],movement[ctr][1]);
+                if(cekMove==true && cekRec==true){
+                    papan = swap(papan,x,y,x+movement[ctr][0],y+movement[ctr][1]);
                     done = DFS(x+movement[ctr][0],y+movement[ctr][1],papan);
-                    if(done ==true){
+                    if(done == true){
                         FinishState.add(papan);
+                        bSolve.setText("mentok");
                     }
-                    ctr++;
                 }
+                    ctr++;
             }
             return done;
         }
