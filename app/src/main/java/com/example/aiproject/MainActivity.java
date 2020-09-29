@@ -1,77 +1,76 @@
 package com.example.aiproject;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 
 public class MainActivity extends AppCompatActivity {
     /*
-     * Initialize Variabels to be used
-     * */
+    * Initialize Variabels to be used
+    * */
     protected Button b0,b1,b2,b3,b4,b5,b6,b7,b8,bSolve,bReset;
     protected Integer[] numbers = {0,1,2,3,4,5,6,7,8};
-    protected Integer[] boards = {-1,-1,-1,-1,-1,-1,-1,-1,-1};
-    protected Integer[][] wincond =new Integer[3][3];
+    protected Integer[][] boards = {{-1,-1,-1},{-1,-1,-1},{-1,-1,-1}}; // board = posisi number
+    Integer[][] win = {{1,2,3},{4,5,6},{7,8,0}};
+    protected Button[][] buttons = new Button[3][3];
 
-    int [][] movement = {{0,-1},{1,0},{0,1},{-1,0} }; //arah jarum jam dari atas
-    Button[][] map = new Button[3][3];
-    Integer[][] mapInt = new Integer[3][3];
-    ArrayList<Button[][]> SavedStaasd = new ArrayList<>();
-    ArrayList<Integer[][]> SavedState = new ArrayList<>();
-    ArrayList<Integer[][]> FinishState = new ArrayList<>();
+    /*
+    * STATE CLASS
+    * */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        int ctr =1;
-        for(int i=0;i<3;i++){
-            for (int j=0;j<3;j++){
-                if(ctr < 9 ){
-                    wincond[i][j] = ctr;
-                    ctr++;
-                }else if(ctr==9){
-                    wincond[i][j] = 0;
-                }
-            }
-        }
-
-        map[0][0] = findViewById(R.id.button0);
-        map[0][1] = findViewById(R.id.button1);
-        map[0][2] = findViewById(R.id.button2);
-        map[1][0] = findViewById(R.id.button3);
-        map[1][1] = findViewById(R.id.button4);
-        map[1][2] = findViewById(R.id.button5);
-        map[2][0] = findViewById(R.id.button6);
-        map[2][1] = findViewById(R.id.button7);
-        map[2][2] = findViewById(R.id.button8);
-        Reset();
+        b0 = findViewById(R.id.button0);
+        b1 = findViewById(R.id.button1);
+        b2 = findViewById(R.id.button2);
+        b3 = findViewById(R.id.button3);
+        b4 = findViewById(R.id.button4);
+        b5 = findViewById(R.id.button5);
+        b6 = findViewById(R.id.button6);
+        b7 = findViewById(R.id.button7);
+        b8 = findViewById(R.id.button8);
 
         bSolve = findViewById(R.id.buttonSolve);
         bReset = findViewById(R.id.buttonReset);
 
-        for(int i=0;i<3;i++){
-            for (int j=0;j<3;j++){
-                mapInt[i][j] =  Integer.parseInt(map[i][j].getText().toString());
-            }
-        }
 
+        buttons[0][0] = b0;
+        buttons[0][1] = b1;
+        buttons[0][2] = b2;
+        buttons[1][0] = b3;
+        buttons[1][1] = b4;
+        buttons[1][2] = b5;
+        buttons[2][0] = b6;
+        buttons[2][1] = b7;
+        buttons[2][2] = b8;
+
+        Reset();
+        RefreshBoard();
     }
 
     public void butClick(View v)
     {
         /*
-         * Get every button pressed id and filter the button
-         * */
+        * Get every button pressed id and filter the button
+        * */
         int id = v.getId();
         if(id == R.id.buttonSolve)
         {
@@ -80,27 +79,148 @@ public class MainActivity extends AppCompatActivity {
         else if (id == R.id.buttonReset)
         {
             Reset();
+            RefreshBoard();
         }
         else
         {
             /*
-             * Temporary var to get the button text
-             * */
+            * Temporary var to get the button text
+            * */
             Button b = (Button) v;
-            String num = b.getText().toString();
+            String num_ = b.getText().toString();
+            int num = 0;
+            if (!num_.isEmpty())
+                num = Integer.parseInt(num_);
+            int[] idx_now = getIndex2Dto2D(boards, num);
+
+            System.out.println( String.format("DEBUGMOVE %s , %s", idx_now[0],idx_now[1]) );
+
+            // MOVE UP IF VALID
+            if (isValidMove(idx_now[0]+1,idx_now[1]))
+                MoveUp(boards, idx_now[0],idx_now[1]);
+            // MOVE DOWN IF VALID
+            if (isValidMove(idx_now[0]-1,idx_now[1]))
+                MoveDown(boards, idx_now[0],idx_now[1]);
+            // MOVE LEFT IF VALID
+            if (isValidMove(idx_now[0],idx_now[1]-1))
+                MoveLeft(boards,idx_now[0],idx_now[1]);
+            // MOVE RIGHT IF VALID
+            if (isValidMove(idx_now[0],idx_now[1]+1))
+                MoveRight(boards,idx_now[0],idx_now[1]);
+            RefreshBoard();
         }
     }
-    public void signButton()
+
+    private void MoveUp(Integer[][] boards, int x, int y)
     {
-        map[0][0] = findViewById(R.id.button0);
-        map[0][1] = findViewById(R.id.button1);
-        map[0][2] = findViewById(R.id.button2);
-        map[1][0] = findViewById(R.id.button3);
-        map[1][1] = findViewById(R.id.button4);
-        map[1][2] = findViewById(R.id.button5);
-        map[2][0] = findViewById(R.id.button6);
-        map[2][1] = findViewById(R.id.button7);
-        map[2][2] = findViewById(R.id.button8);
+        if (boards[x+1][y] == 0)
+        {
+            boards[x][y] = boards[x][y]^boards[x+1][y]^(boards[x+1][y] = boards[x][y]); //SWAP
+        }
+    }
+    private void MoveDown(Integer[][] boards, int x, int y)
+    {
+        if (boards[x-1][y] == 0)
+        {
+            boards[x][y] = boards[x][y]^boards[x-1][y]^(boards[x-1][y] = boards[x][y]); //SWAP
+        }
+    }
+    private void MoveLeft(Integer[][] boards, int x, int y)
+    {
+        if (boards[x][y-1] == 0)
+        {
+            boards[x][y] = boards[x][y]^boards[x][y-1]^(boards[x][y-1] = boards[x][y]); //SWAP
+        }
+    }
+    private void MoveRight(Integer[][] boards, int x, int y)
+    {
+        if (boards[x][y+1] == 0)
+        {
+            boards[x][y] = boards[x][y]^boards[x][y+1]^(boards[x][y+1] = boards[x][y]); //SWAP
+        }
+    }
+
+
+    private boolean isValidMove(int i, int j)
+    {
+        return ((i>=0&&i<3) && (j>=0&&j<3));
+    }
+
+    // a = a^b^(b = a); SWAP
+
+
+
+
+
+    Queue<State>queue = new LinkedList<State>();
+    Integer[][] root = new Integer[3][3];
+    public ArrayList<Integer[][]> recur = new ArrayList<>();
+
+    public void BFS(){
+
+
+        String angka="";
+        for(int i=0;i<3;i++){
+            for(int j=0;j<3;j++){
+                angka+=buttons[i][j].getText().toString()+" - ";
+                try{
+                    root[i][j]=Integer.parseInt(buttons[i][j].getText().toString());
+
+                }catch (Exception  ex){
+                    root[i][j]=0;
+                }
+            }
+        }
+        System.out.println("angka : "+angka);
+
+
+        State tState;  //temp
+        Integer[][] tArr;
+        State rootState = new State(root);
+        queue.add(rootState);
+    int step = 0;
+    if(queue.isEmpty()){
+        System.out.println("asd");
+    }else{
+        System.out.println("sss");
+    }
+
+    while(!queue.isEmpty()){
+        step++;
+        System.out.println("Step : "+step);
+        tState = queue.remove();
+        tArr = tState.getNow(); //dapet papan parent
+        if(tArr == win){
+            System.out.println("win");
+        }else{
+            recur.add(tArr);
+            tState.setChild(recur);
+            if(tState.getDown()!=null){
+                queue.add(new State(tState.getDown()));
+                System.out.println("addDown");
+            }
+            if(tState.getUp()!=null){
+                queue.add(new State(tState.getUp()));
+                System.out.println("addUp");
+            }
+            if(tState.getLeft()!=null){
+                queue.add(new State(tState.getLeft()));
+                System.out.println("addLeft");
+            }
+            if(tState.getRight()!=null){
+                queue.add(new State(tState.getRight()));
+                System.out.println("addRight");
+            }
+
+        }
+    }
+
+        System.out.println("exit");
+
+
+
+
+
     }
     public void Solve()
     {
@@ -110,148 +230,95 @@ public class MainActivity extends AppCompatActivity {
          * DFS
          * (+)
          * */
+        BFS();
 
-        int[] loc = getXY(mapInt);
-        DFS(loc[0],loc[1],mapInt);
 
     }
     public void Reset()
     {
         /*
-         * Reset State of button and assign new number for each Button
-         * */
+        * Reset State of button and assign new number for each Button
+        * */
         // Random Every Number in a List
         Collections.shuffle(Arrays.asList(numbers));
 
-        boards[0] = numbers[0];
-        boards[1] = numbers[1];
-        boards[2] = numbers[2];
-        boards[3] = numbers[3];
-        boards[4] = numbers[4];
-        boards[5] = numbers[5];
-        boards[6] = numbers[6];
-        boards[7] = numbers[7];
-        boards[8] = numbers[8];
+        boards[0][0] = numbers[0];
+        boards[0][1] = numbers[1];
+        boards[0][2] = numbers[2];
+        boards[1][0] = numbers[3];
+        boards[1][1] = numbers[4];
+        boards[1][2] = numbers[5];
+        boards[2][0] = numbers[6];
+        boards[2][1] = numbers[7];
+        boards[2][2] = numbers[8];
+    }
 
-        int ctr=0;
-        for (int i=0 ;i<3;i++){
-            for (int j=0;j<3;j++){
-                map[i][j].setText(String.format("%s",boards[ctr]));
+    public void RefreshBoard()
+    {
+        /*
+        * List all button into array for further used
+        * Get the number 0 index from the boards
+        * set the text of the buttons as the same as board
+        * set the background of 0 number to differentiate the color
+        */
+        ArrayList<Button> arr = new ArrayList<>(Arrays.asList(b0,b1,b2,b3,b4,b5,b6,b7,b8));
+        int ctr = 0;
+        for (int i = 0; i < arr.size(); i++)
+        {
+            if (i == 3 || i == 6 )
                 ctr++;
-            }
+            arr.get(i).setText( String.format("%s", boards[ctr][i%3]) );
         }
 
-//        b0.setText( String.format("%s",boards[0]) );
-//        b1.setText( String.format("%s",boards[1]) );
-//        b2.setText( String.format("%s",boards[2]) );
-//        b3.setText( String.format("%s",boards[3]) );
-//        b4.setText( String.format("%s",boards[4]) );
-//        b5.setText( String.format("%s",boards[5]) );
-//        b6.setText( String.format("%s",boards[6]) );
-//        b7.setText( String.format("%s",boards[7]) );
-//        b8.setText( String.format("%s",boards[8]) );
+        int zero_index = getIndex2Dto1D(boards, 0);
+        for (int i = 0; i < arr.size(); i++)
+        {
+            arr.get(i).setBackgroundColor(Color.argb(170,179,153,255)); // biru
+            if (i == zero_index)
+            {
+                arr.get(i).setBackgroundColor(Color.argb(170,255,153,153)); // merah
+                arr.get(i).setText(""); //Remove 0 from boards
+            }
+        }
     }
 
-    public int[] getXY(Integer[][] papan){
-        int[] loc = new int[2];
-        for(int i=0;i<3;i++){
-            for(int j=0;j<3;j++){
-                if(papan[i][j]==0){
-                    loc[0]=j;
-                    loc[1]=i;
+    private int getIndex2Dto1D(Integer[][] boards, int idx)
+    {
+        /*
+        * GET INDEX 0 FROM 2D ARRAY AND CONVERT TO 1D ARRAY INDEX
+        * */
+        int[] b = {-1,-1};
+        for (int i=0;i<3;i++)
+        {
+            for (int j=0;j<3;j++)
+            {
+                if (boards[i][j] == idx)
+                {
+                    b[0] = i;
+                    b[1] = j;
                 }
             }
         }
-
-        return loc;
-
-    }
-    public Boolean cekWin(Integer[][] board){
-        if(board == wincond){
-            return  true;
-        }else{
-            return false;
-        }
+        return (b[0] * 3 + b[1]); // return 0-25
     }
 
-    public void saveState(Integer[][] board){
-        SavedState.add(board);
-    }
-
-    public Boolean cekMovement(int x,int y , int xMove, int yMove){
-        Boolean temp = true;
-        if (x+xMove <0 || x+xMove>=3)temp = false;
-        if (y+yMove <0 || y+yMove>=3)temp = false;
-        return  temp;
-    }
-    public Boolean cekContain(Integer[][] board){
-        for(int i=0;i<SavedState.size();i++){
-            if(SavedState.get(i) == board){
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public Boolean cekRecuring(Integer[][] board,int x,int y,int xMove,int yMove){
-        //xy posisi 0
-        Boolean temp = false;
-        if(cekMovement(x,y,xMove,yMove)==true){ //engga renegade
-            //swap
-            int angka=board[y+yMove][x+xMove];
-            board[y+yMove][x+xMove]=board[y][x];
-            board[y][x] = angka;
-
-            //ngecek savedState sama board yang sudah diswap
-            if(cekContain(board)){
-                temp=false;
-            }else{
-                temp = true;
-            }
-        }
-
-
-        return temp;
-    }
-
-
-    public Integer[][] swap(Integer[][] papan , int x, int y , int xMove,int yMove){
-        int angka=papan[yMove][xMove];
-        papan[y+yMove][x+xMove]=papan[y][x];
-        papan[y][x] = angka;
-        return papan;
-    }
-
-    public Boolean DFS(int x,int y,Integer[][] papan){ //xy  lokasi 0
-        if(cekWin(papan)){
-            for(int i=0;i<3;i++){
-                for (int j=0;j<3;j++){
-                    map[i][j].setText(papan[i][j]);
+    private int[] getIndex2Dto2D(Integer[][] boards, int idx)
+    {
+        /*
+         * GET INDEX 0 FROM 2D ARRAY AND CONVERT TO 2D ARRAY INDEX
+         * */
+        int[] b = {-1,-1};
+        for (int i=0;i<3;i++)
+        {
+            for (int j=0;j<3;j++)
+            {
+                if (boards[i][j] == idx)
+                {
+                    b[0] = i;
+                    b[1] = j;
                 }
             }
-            return true;
-        }else{
-            saveState(papan);
-            int ctr=0;
-            Boolean done=false;
-            while(ctr<4 && done==false ){
-                Boolean cekMove =cekMovement(x,y,movement[ctr][0],movement[ctr][1]);
-                Boolean cekRec =  cekRecuring(papan,x,y,movement[ctr][0],movement[ctr][1]);
-                if(cekMove==true && cekRec==true){
-                    papan = swap(papan,x,y,x+movement[ctr][0],y+movement[ctr][1]);
-                    done = DFS(x+movement[ctr][0],y+movement[ctr][1],papan);
-                    if(done == true){
-                        FinishState.add(papan);
-                        bSolve.setText("mentok");
-                    }
-                }
-                    ctr++;
-            }
-            return done;
         }
-
-
+        return b; // return i,j
     }
-
-
 }
