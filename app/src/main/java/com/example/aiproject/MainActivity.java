@@ -185,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("sss");
     }
 
-    while(!queue.isEmpty()){
+    while(!queue.isEmpty() && step<=2){
         step++;
         System.out.println("Step : "+step);
         tState = queue.remove();
@@ -204,6 +204,11 @@ public class MainActivity extends AppCompatActivity {
 
             //ndapetin child dari state sekarang buat dimasukno ke eueue
             tState.setChild();
+            tState.setNow(tArr);
+            System.out.println("now e nde Main");
+            for (int i=0;i<3;i++){
+                System.out.println(tState.getNow()[i][0]+"-"+tState.getNow()[i][1]+"-"+tState.getNow()[i][2]);
+            }
 
 //             cek renagade di class
             if(tState.getLeft()!=null && cekContain(recur,tState.getLeft()) ){

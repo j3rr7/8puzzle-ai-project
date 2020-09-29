@@ -64,13 +64,34 @@ public class State {
 
         // ben ga ngganti value dari state now
         //moveUp
-        Integer[][] temp = now;
+        Integer[][] temp1 = new Integer[3][3];
+        Integer[][] temp2 = new Integer[3][3];
+        Integer[][] temp3 = new Integer[3][3];
+        Integer[][] temp4 = new Integer[3][3];
+
+        for (int i=0;i<3;i++){
+            for(int j=0;j<3;j++){
+                temp1[i][j] = now[i][j];
+                temp2[i][j] = now[i][j];
+                temp3[i][j] = now[i][j];
+                temp4[i][j] = now[i][j];
+            }
+        }
+
+        System.out.println("now awal");
+        for (int i=0;i<3;i++){
+            System.out.println(now[i][0]+"-"+now[i][1]+"-"+now[i][2]);
+        }
+
+
+
+
         try {
-            int angka = temp[y-1][x];
-            temp[y-1][x]=temp[y][x];
-            temp[y][x]=angka;
+            int angka = temp1[y-1][x];
+            temp1[y-1][x]=temp1[y][x];
+            temp1[y][x]=angka;
             System.out.println("Up child is available");
-            up = temp;
+            up = temp1;
             for (int i=0;i<3;i++){
                     System.out.println(up[i][0]+"-"+up[i][1]+"-"+up[i][2]);
             }
@@ -84,30 +105,26 @@ public class State {
 
 
         //movDown
-         temp = now;
         try {
-            int angka = temp[y+1][x];
-            temp[y+1][x]=temp[y][x];
-            temp[y][x]=angka;
+            int angka = temp2[y+1][x];
+            temp2[y+1][x]=temp2[y][x];
+            temp2[y][x]=angka;
             System.out.println("Down child is available");
-            down = temp;
-
+            down = temp2;
             for (int i=0;i<3;i++){
                 System.out.println(down[i][0]+"-"+down[i][1]+"-"+down[i][2]);
             }
-
         }catch (Exception e){
             down = null;
         }
 
         //movLeft
-        temp = now;
         try {
-            int angka = temp[y][x-1];
-            temp[y][x-1]=temp[y][x];
-            temp[y][x]=angka;
+            int angka = temp3[y][x-1];
+            temp3[y][x-1]=temp3[y][x];
+            temp3[y][x]=angka;
             System.out.println("Left child is available");
-            left = temp;
+            left = temp3;
 
             for (int i=0;i<3;i++){
                 System.out.println(left[i][0]+"-"+left[i][1]+"-"+left[i][2]);
@@ -118,13 +135,13 @@ public class State {
         }
 
         //moRight
-        temp = now;
+        temp4 = now;
         try {
-            int angka = temp[y][x+1];
-            temp[y][x+1]=temp[y][x];
-            temp[y][x]=angka;
+            int angka = temp4[y][x+1];
+            temp4[y][x+1]=temp4[y][x];
+            temp4[y][x]=angka;
             System.out.println("Right child is available");
-            right = temp;
+            right = temp4;
 
             for (int i=0;i<3;i++){
                 System.out.println(right[i][0]+"-"+right[i][1]+"-"+right[i][2]);
@@ -134,7 +151,7 @@ public class State {
             right = null;
         }
 
-        System.out.println("now e");
+        System.out.println("now e akhir");
         for (int i=0;i<3;i++){
             System.out.println(now[i][0]+"-"+now[i][1]+"-"+now[i][2]);
         }
