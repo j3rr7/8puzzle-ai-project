@@ -156,8 +156,8 @@ public class MainActivity extends AppCompatActivity {
     Integer[][] root = new Integer[3][3];
     public ArrayList<Integer[][]> recur = new ArrayList<>();
 
-    public void BFS(){
 
+    public void BFS(){
 
         String angka="";
         for(int i=0;i<3;i++){
@@ -191,13 +191,58 @@ public class MainActivity extends AppCompatActivity {
         tState = queue.remove();
         tArr = tState.getNow(); //dapet papan parent
         if(tArr == win){
-            System.out.println("win");
+            System.out.println(" -----win---------");
+            System.out.println(" -----win---------");
+            System.out.println(" -----win---------");
+            System.out.println(" -----win---------");
+            System.out.println(" -----win---------");
+            System.out.println(" -----win---------");
         }else{
             // karna ga win , state now dimasukin list e recuring
-            recur.add(tArr);
+            recur.add(tState.getNow());
+
 
             //ndapetin child dari state sekarang buat dimasukno ke eueue
-            tState.setChild(recur);
+            tState.setChild();
+
+//             cek renagade di class
+            if(tState.getLeft()!=null && cekContain(recur,tState.getLeft()) ){
+
+                tState.setLeft(null);
+                System.out.println("setNull left");
+            } else{
+                System.out.println("add Left to recur");
+                recur.add(tState.getLeft());
+            }
+
+            if(tState.getRight()!=null && cekContain(recur,tState.getRight()) ){
+                tState.setRight(null);
+                System.out.println("setNull RIGHT");
+            } else{
+                System.out.println("add right to recur");
+                recur.add(tState.getRight());
+            }
+            if(tState.getUp()!=null && cekContain(recur,tState.getUp())  ){
+                tState.setUp(null);
+                System.out.println("setNull up");
+            } else{
+                System.out.println("add up to recur");
+                recur.add(tState.getUp());
+            }
+
+            if(tState.getDown()!=null && cekContain(recur,tState.getDown())  ){
+                tState.setDown(null);
+                System.out.println("setNull Down");
+            } else{
+                System.out.println("add Down to recur");
+                recur.add(tState.getDown());
+            }
+
+            System.out.println("Recur size"+recur.size());
+
+
+            //nambah queueu
+//---------------------------------------------------------------------
             if(tState.getDown()!=null){
                 queue.add(new State(tState.getDown()));
                 System.out.println("addDown");
@@ -220,6 +265,22 @@ public class MainActivity extends AppCompatActivity {
 
         System.out.println("exit");
     }
+
+    public Boolean cekContain(ArrayList<Integer[][]> list , Integer[][] state){
+       // kalo false ga contain
+        Boolean cek=false;
+        for(int i=0;i<list.size();i++){
+            if(list.get(i) == state){
+                cek=true;
+                break;
+            }
+        }
+
+
+        return cek;
+    }
+
+
     public void Solve()
     {
         /*

@@ -48,7 +48,7 @@ public class State {
 
 
 
-    public void setChild(ArrayList<Integer[][]> recur){
+    public void setChild(){
 
         int x=0,y=0;
         //buat nyari posisi e angka 0
@@ -63,74 +63,81 @@ public class State {
         }
 
         // ben ga ngganti value dari state now
-        Integer[][] temp = now;
         //moveUp
+        Integer[][] temp = now;
         try {
             int angka = temp[y-1][x];
             temp[y-1][x]=temp[y][x];
             temp[y][x]=angka;
-
+            System.out.println("Up child is available");
             up = temp;
+            for (int i=0;i<3;i++){
+                    System.out.println(up[i][0]+"-"+up[i][1]+"-"+up[i][2]);
+            }
             // lek dee gagal , up e tetep null
         }catch (Exception e){
             up =null;
             //jogo"
         }
 
-         temp = now;
+
+
+
         //movDown
+         temp = now;
         try {
             int angka = temp[y+1][x];
             temp[y+1][x]=temp[y][x];
             temp[y][x]=angka;
-
+            System.out.println("Down child is available");
             down = temp;
+
+            for (int i=0;i<3;i++){
+                System.out.println(down[i][0]+"-"+down[i][1]+"-"+down[i][2]);
+            }
+
         }catch (Exception e){
             down = null;
         }
 
-        temp = now;
         //movLeft
+        temp = now;
         try {
             int angka = temp[y][x-1];
             temp[y][x-1]=temp[y][x];
             temp[y][x]=angka;
-
+            System.out.println("Left child is available");
             left = temp;
+
+            for (int i=0;i<3;i++){
+                System.out.println(left[i][0]+"-"+left[i][1]+"-"+left[i][2]);
+            }
+
         }catch (Exception e){
             left = null;
         }
 
-        temp = now;
         //moRight
+        temp = now;
         try {
             int angka = temp[y][x+1];
             temp[y][x+1]=temp[y][x];
             temp[y][x]=angka;
-
+            System.out.println("Right child is available");
             right = temp;
+
+            for (int i=0;i<3;i++){
+                System.out.println(right[i][0]+"-"+right[i][1]+"-"+right[i][2]);
+            }
+
         }catch (Exception e){
             right = null;
         }
 
-        // ngecek child e iki recuring ta gak , kalo ternyata dee recur ya dinull in
-        if(up!=null && recur.contains(up)){
-            up=null;
+        System.out.println("now e");
+        for (int i=0;i<3;i++){
+            System.out.println(now[i][0]+"-"+now[i][1]+"-"+now[i][2]);
         }
-        if(down!=null && recur.contains(down)){
-            up=null;
-        }
-        if(left!=null && recur.contains(left)){
-            left=null;
-        }
-        if(right!=null && recur.contains(right)){
-            right=null;
-        }
-
-
-
-
-
 
 
 
