@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -158,8 +159,14 @@ public class MainActivity extends AppCompatActivity {
         * DFS
         * (+)
         * */
-        //Solver.Astar(boards);
-        Solver.BFS(boards);
+        Toast.makeText(this,Solver.BFS(boards),Toast.LENGTH_LONG).show();
+        //Toast.makeText(this,Solver.Astar(boards),Toast.LENGTH_LONG).show();
+/*        new Thread(new Runnable() {
+            public void run() {
+                // a potentially time consuming task
+                //Solver.Astar(boards);
+            }
+        }).start();*/
     }
 
     public void Reset()

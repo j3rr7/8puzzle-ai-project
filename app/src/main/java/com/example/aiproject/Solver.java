@@ -1,5 +1,7 @@
 package com.example.aiproject;
 
+import android.widget.Toast;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -8,8 +10,8 @@ import java.util.Queue;
 import java.util.Stack;
 
 public class Solver {
-    public static ArrayList<Node> visitedNode = new ArrayList<>();
-    public static void BFS(Integer[][] node)
+    public static ArrayList<Integer[][]> visitedNode = new ArrayList<>();
+    public static String BFS(Integer[][] node)
     {
         visitedNode.clear(); // ClOSE
 
@@ -19,9 +21,9 @@ public class Solver {
 
         Node n = new Node(null,node,0,0,"");
         processedNode.add(n);
-        visitedNode.add(n);
+        visitedNode.add(n.state);
 
-        int maxNodes = 1;
+        int maxNodes = 200000;
         while(!processedNode.isEmpty())
         {
             n = processedNode.peek();
@@ -33,14 +35,14 @@ public class Solver {
             }
             Node.GeneratePossibleChildren(n);
             for (Node child: n.children) {
-                if (!visitedNode.contains(child))
+                if (!visitedNode.contains(child.state))
                 {
-                    visitedNode.add(child);
+                    visitedNode.add(child.state);
                     processedNode.add(child);
                 }
-                if (processedNode.size() > maxNodes)
+                if (processedNode.size() >= maxNodes)
                 {
-                    maxNodes = processedNode.size();
+                    break;
                 }
             }
             System.out.println( String.format("Node size : %s", processedNode.size()) );
@@ -48,35 +50,36 @@ public class Solver {
         if (solution != null)
         {
             Stack<Node> step = new Stack<>();
-
             while(solution.parent != null)
             {
                 step.push(solution);
                 solution = solution.parent;
             }
             int totalCost = 0;
-            for (Node s:step) {
+            String jwban = "";
+            while(!step.isEmpty())
+            {
+                Node s = step.pop();
                 totalCost += s.cost;
-                System.out.println( String.format("Move %s", s.move.toString()) );
+                jwban += s.move + " ";
             }
+            System.out.println( String.format("Move %s", jwban) );
+            return jwban;
         }
         else
         {
             System.out.println(" Tidak bisa solving ");
+            return "solve tidak ditemukan";
         }
     }
-    public static void Astar(Integer[][] node)
+    public static String Astar(Integer[][] node)
     {
         visitedNode.clear();
-
         PriorityQueue<Node> NodeProcessed = new PriorityQueue<>();
-
         Node solution = null;
-
         Node n = new Node(null,node,0,0,"");
         NodeProcessed.add(n);
-        visitedNode.add(n);
-
+        visitedNode.add(n.state);
         int maxNodes = 1;
         while(!NodeProcessed.isEmpty())
         {
@@ -85,15 +88,15 @@ public class Solver {
             priority = n.cost;
             if (n.isGoal())
             {
-                //System.out.println( String.format("Depth: %s, MaxNode : %s", n.depth,maxNodes) );
+                System.out.println( String.format("Depth: %s, MaxNode : %s", n.depth,maxNodes) );
                 solution = n;
                 break;
             }
             Node.GeneratePossibleChildren(n);
             for (Node v : n.children ) {
-                if (!visitedNode.contains(v))
+                if (!visitedNode.contains(v.state))
                 {
-                    visitedNode.add(v);
+                    visitedNode.add(v.state);
                     NodeProcessed.add(v);
                 }
                 if (NodeProcessed.size() > maxNodes)
@@ -106,22 +109,26 @@ public class Solver {
         if (solution != null)
         {
             Stack<Node> step = new Stack<>();
-
             while(solution.parent != null)
             {
                 step.push(solution);
                 solution = solution.parent;
             }
-
             int totalCost = 0;
-            for (Node s:step) {
+            String jwban = "";
+            while(!step.isEmpty())
+            {
+                Node s = step.pop();
                 totalCost += s.cost;
-                System.out.println( String.format("Move %s", s.move.toString()) );
+                jwban += s.move + " ";
             }
+            System.out.println( String.format("Move %s", jwban) );
+            return jwban;
         }
         else
         {
             System.out.println(" Tidak bisa solving ");
+            return "Tidak Bisa Solving";
         }
     }
 }
