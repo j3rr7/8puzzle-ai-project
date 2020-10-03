@@ -159,8 +159,9 @@ public class MainActivity extends AppCompatActivity {
         * DFS
         * (+)
         * */
-        Toast.makeText(this,Solver.BFS(boards),Toast.LENGTH_LONG).show();
+        //Toast.makeText(this,Solver.BFS(boards),Toast.LENGTH_LONG).show();
         //Toast.makeText(this,Solver.Astar(boards),Toast.LENGTH_LONG).show();
+
 /*        new Thread(new Runnable() {
             public void run() {
                 // a potentially time consuming task

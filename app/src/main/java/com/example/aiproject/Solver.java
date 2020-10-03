@@ -4,6 +4,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.Queue;
@@ -11,19 +12,17 @@ import java.util.Stack;
 
 public class Solver {
     public static ArrayList<Integer[][]> visitedNode = new ArrayList<>();
+
     public static String BFS(Integer[][] node)
     {
         visitedNode.clear(); // ClOSE
 
         Queue<Node> processedNode = new LinkedList<>(); // OPEN
-
         Node solution = null;
-
         Node n = new Node(null,node,0,0,"");
         processedNode.add(n);
         visitedNode.add(n.state);
 
-        int maxNodes = 200000;
         while(!processedNode.isEmpty())
         {
             n = processedNode.peek();
@@ -33,16 +32,12 @@ public class Solver {
                 solution = n;
                 break;
             }
-            Node.GeneratePossibleChildren(n);
+            Node.GeneratePossibleChildren(n,"bfs");
             for (Node child: n.children) {
                 if (!visitedNode.contains(child.state))
                 {
                     visitedNode.add(child.state);
                     processedNode.add(child);
-                }
-                if (processedNode.size() >= maxNodes)
-                {
-                    break;
                 }
             }
             System.out.println( String.format("Node size : %s", processedNode.size()) );
@@ -63,7 +58,7 @@ public class Solver {
                 totalCost += s.cost;
                 jwban += s.move + " ";
             }
-            System.out.println( String.format("Move %s", jwban) );
+            System.out.println( String.format("Move %s, Total Cost", jwban, totalCost) );
             return jwban;
         }
         else
@@ -75,36 +70,32 @@ public class Solver {
     public static String Astar(Integer[][] node)
     {
         visitedNode.clear();
-        PriorityQueue<Node> NodeProcessed = new PriorityQueue<>();
+        PriorityQueue<Node> NodeProcessed = new PriorityQueue<>(1,new ArrayComparator());
         Node solution = null;
         Node n = new Node(null,node,0,0,"");
         NodeProcessed.add(n);
         visitedNode.add(n.state);
-        int maxNodes = 1;
+
         while(!NodeProcessed.isEmpty())
         {
             int priority;
-            n = NodeProcessed.poll();
+            n = NodeProcessed.peek();
+            NodeProcessed.poll();
             priority = n.cost;
             if (n.isGoal())
             {
-                System.out.println( String.format("Depth: %s, MaxNode : %s", n.depth,maxNodes) );
                 solution = n;
                 break;
             }
-            Node.GeneratePossibleChildren(n);
+            Node.GeneratePossibleChildren(n,"a*");
             for (Node v : n.children ) {
                 if (!visitedNode.contains(v.state))
                 {
                     visitedNode.add(v.state);
                     NodeProcessed.add(v);
                 }
-                if (NodeProcessed.size() > maxNodes)
-                {
-                    maxNodes = NodeProcessed.size();
-                }
             }
-            System.out.println( String.format("Depth: %s, MaxNode : %s", n.depth,maxNodes) );
+            System.out.println( String.format("Depth: %s priority : %s", n.depth, priority) );
         }
         if (solution != null)
         {
@@ -122,7 +113,7 @@ public class Solver {
                 totalCost += s.cost;
                 jwban += s.move + " ";
             }
-            System.out.println( String.format("Move %s", jwban) );
+            System.out.println( String.format("Move %s Total Cost %s", jwban,totalCost) );
             return jwban;
         }
         else

@@ -4,14 +4,15 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 
-public class Node implements Cloneable,Comparable {
-    public Node parent;
-    public ArrayList<Node> children = new ArrayList<>();
-    public Integer[][] state;
-    public int depth, cost;
-    public String move;
-    public int[] zeroIndex = {-1, -1};
+public class Node implements Cloneable {
+        public Node parent;
+        public ArrayList<Node> children = new ArrayList<>();
+        public Integer[][] state;
+        public int depth, cost;
+        public String move;
+        public int[] zeroIndex = {-1, -1};
 
     public int getDepth() {
         return depth;
@@ -129,7 +130,6 @@ public class Node implements Cloneable,Comparable {
         int count = 0;
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                if (this.state[i][j] == 0) continue;
                 if (!this.state[i][j].equals(MainActivity.GOAL_STATE[i][j]))
                     count++;
             }
@@ -137,23 +137,31 @@ public class Node implements Cloneable,Comparable {
         return count;
     }
 
-    public static void GeneratePossibleChildren(Node n)
+    public static void GeneratePossibleChildren(Node n,String cara)
     {
-        String cara ="bfs"; // bfs | a* |
+        //String cara ="bfs"; // bfs | a* |
 
         if (cara.equalsIgnoreCase("a*"))
         {
             if(n.CanMoveUp()) {
-                n.children.add(new Node(n, Node.MoveUp(n).state, n.depth + 1, n.MisplacedCount(), "up" ));
+                Integer[][] NewState_ = cloneArray(n.state);
+                NewState_[n.getZeroIndex()[0]][n.getZeroIndex()[1]] = NewState_[n.getZeroIndex()[0]][n.getZeroIndex()[1]]^NewState_[n.getZeroIndex()[0]-1][n.getZeroIndex()[1]]^(NewState_[n.getZeroIndex()[0]-1][n.getZeroIndex()[1]] = NewState_[n.getZeroIndex()[0]][n.getZeroIndex()[1]]);
+                n.children.add(new Node(n, NewState_, n.depth + 1, n.MisplacedCount() + n.depth, "up" ));
             }
             if (n.CanMoveDown()) {
-                n.children.add(new Node(n, Node.MoveDown(n).state, n.depth + 1, n.MisplacedCount(), "down" ));
+                Integer[][] NewState_ = cloneArray(n.state);
+                NewState_[n.getZeroIndex()[0]][n.getZeroIndex()[1]] = NewState_[n.getZeroIndex()[0]][n.getZeroIndex()[1]]^NewState_[n.getZeroIndex()[0]+1][n.getZeroIndex()[1]]^(NewState_[n.getZeroIndex()[0]+1][n.getZeroIndex()[1]] = NewState_[n.getZeroIndex()[0]][n.getZeroIndex()[1]]);
+                n.children.add(new Node(n, NewState_, n.depth + 1, n.MisplacedCount() + n.depth, "down" ));
             }
             if (n.CanMoveLeft()) {
-                n.children.add(new Node(n, Node.MoveLeft(n).state, n.depth + 1, n.MisplacedCount(), "left" ));
+                Integer[][] NewState_ = cloneArray(n.state);
+                NewState_[n.getZeroIndex()[0]][n.getZeroIndex()[1]] = NewState_[n.getZeroIndex()[0]][n.getZeroIndex()[1]]^NewState_[n.getZeroIndex()[0]][n.getZeroIndex()[1]-1]^(NewState_[n.getZeroIndex()[0]][n.getZeroIndex()[1]-1] = NewState_[n.getZeroIndex()[0]][n.getZeroIndex()[1]]);
+                n.children.add(new Node(n, NewState_, n.depth + 1, n.MisplacedCount() + n.depth, "left" ));
             }
             if (n.CanMoveRight()) {
-                n.children.add(new Node(n, Node.MoveRight(n).state, n.depth + 1, n.MisplacedCount(), "right" ));
+                Integer[][] NewState_ = cloneArray(n.state);
+                NewState_[n.getZeroIndex()[0]][n.getZeroIndex()[1]] = NewState_[n.getZeroIndex()[0]][n.getZeroIndex()[1]]^NewState_[n.getZeroIndex()[0]][n.getZeroIndex()[1]+1]^(NewState_[n.getZeroIndex()[0]][n.getZeroIndex()[1]+1] = NewState_[n.getZeroIndex()[0]][n.getZeroIndex()[1]]);
+                n.children.add(new Node(n, NewState_, n.depth + 1, n.MisplacedCount() + n.depth, "right" ));
             }
         }
         else if (cara.equalsIgnoreCase("bfs"))
@@ -185,9 +193,13 @@ public class Node implements Cloneable,Comparable {
         }
         return n;
     }
-
-    @Override
-    public int compareTo(Object o) {
-        return Integer.compare(this.cost, ((Node)o).cost);
+}
+class ArrayComparator implements Comparator<Node> {
+    public int compare(Node s1, Node s2) {
+        if (s1.cost > s2.cost)
+            return 1;
+        else if (s1.cost < s2.cost)
+            return -1;
+        return 0;
     }
 }
