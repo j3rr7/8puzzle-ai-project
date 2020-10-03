@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     protected Button b0,b1,b2,b3,b4,b5,b6,b7,b8,bSolve,bReset;
     protected Integer[] numbers = {0,1,2,3,4,5,6,7,8};
     protected Integer[][] boards = {{-1,-1,-1},{-1,-1,-1},{-1,-1,-1}}; // board = posisi number
-    Integer[][] win = {{1,2,3},{4,5,6},{7,8,0}};
+    int[][] win = {{1,2,3},{4,5,6},{7,8,0}};
     protected Button[][] buttons = new Button[3][3];
 
     /*
@@ -66,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
         Reset();
         RefreshBoard();
     }
+
+
 
     public void butClick(View v)
     {
@@ -154,12 +156,11 @@ public class MainActivity extends AppCompatActivity {
 
 
     Queue<State>queue = new LinkedList<State>();
-    Integer[][] root = new Integer[3][3];
-    public ArrayList<Integer[][]> recur = new ArrayList<>();
+    int[][] root = new int[3][3];
+    public ArrayList<int[][]> recur = new ArrayList<>();
 
 
     public void BFS(){
-
         String angka="";
         for(int i=0;i<3;i++){
             for(int j=0;j<3;j++){
@@ -173,115 +174,97 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         System.out.println("angka : "+angka);
-
-
         State tState;  //temp
-        Integer[][] tArr = new Integer[3][3];
+        int[][] tArr = new int[3][3];
         State rootState = new State(root);
         queue.add(rootState);
-    int step = 0;
-    if(queue.isEmpty()){
-        System.out.println("asd");
-    }else{
-        System.out.println("sss");
-    }
+        int step = 0;
+        while(!queue.isEmpty() ){
+            step++;
+            System.out.println("step :"+step);
+            tState = queue.remove();
+            if(cekWin(tState.self)){
+                System.out.println("win");
+                queue.clear();
+            }else{
+                recur.add(tState.getSelf().clone());
+                tState.setChild();
+                System.out.println("recur = "+recur.size()+"");
 
-    while(!queue.isEmpty() && step<5 ){
-        step++;
-        System.out.println("Step : "+step);
-        tState = queue.remove();
+                if(tState.getUp()!=null && cekContain(recur,tState.getUp().clone()) ){
+                    tState.setUp(null);
+//                    System.out.println("up Null");
+                }else if(tState.getUp()!=null && !cekContain(recur,tState.getUp().clone())){
+                    queue.add(new State(tState.getUp().clone()));
+                    recur.add(tState.getUp().clone());
+//                    System.out.println("add up to Recur");
+                }
 
-        for (int i=0;i<3;i++){
-            for(int j=0;j<3;j++){
-                tArr[i][j] = tState.getNow()[i][j];
-            }
-        }
-
-        if(tArr == win){
-            System.out.println(" -----win---------");
-            System.out.println(" -----win---------");
-            System.out.println(" -----win---------");
-            System.out.println(" -----win---------");
-            System.out.println(" -----win---------");
-            System.out.println(" -----win---------");
-        }else{
-            // karna ga win , state now dimasukin list e recuring
-            recur.add(tState.getNow());
-
-
-            //ndapetin child dari state sekarang buat dimasukno ke eueue
-            tState.setChild();
-            tState.setNow(tArr);
-            System.out.println("now e nde Main");
-            for (int i=0;i<3;i++){
-                System.out.println(tState.getNow()[i][0]+"-"+tState.getNow()[i][1]+"-"+tState.getNow()[i][2]);
-            }
-
-//             cek renagade di class
-            if(tState.getLeft()!=null && cekContain(recur,tState.getLeft()) ){
-                tState.setLeft(null);
-
-            } else if(tState.getLeft()!=null && !cekContain(recur,tState.getLeft())){
-                recur.add(tState.getLeft());
-            }
+                if(tState.getRight()!=null && cekContain(recur,tState.getRight().clone()) ){
+                    tState.setRight(null);
+//                    System.out.println("right Null");
+                }else if(tState.getRight()!=null && !cekContain(recur,tState.getRight().clone())){
+                    queue.add(new State(tState.getRight().clone()));
+                    recur.add(tState.getRight().clone());
+//                    System.out.println("add right to Recur");
+                }
 
 
-            if(tState.getRight()!=null && cekContain(recur,tState.getRight()) ){
-                tState.setRight(null);
+                if(tState.getDown()!=null && cekContain(recur,tState.getDown().clone()) ){
+                    tState.setDown(null);
+//                    System.out.println("down Null");
+                }else if(tState.getDown()!=null && !cekContain(recur,tState.getDown().clone())){
+                    queue.add(new State(tState.getDown().clone()));
+                    recur.add(tState.getDown().clone());
+//                    System.out.println("add down to Recur");
+                }
 
-            } else if(tState.getRight()!=null && !cekContain(recur,tState.getRight())){
+                if(tState.getLeft()!=null && cekContain(recur,tState.getLeft().clone()) ){
+                    tState.setLeft(null);
+//                    System.out.println("left Null");
+                }else if(tState.getLeft()!=null && !cekContain(recur,tState.getLeft().clone())){
+                    queue.add(new State(tState.getLeft().clone()));
+                    recur.add(tState.getLeft().clone());
+//                    System.out.println("add left to Recur");
+                }
 
-                recur.add(tState.getRight());
-            }
+//
+//                System.out.println("now e nde Main Akhir");
+//                for (int i=0;i<3;i++){
+//                    System.out.println(tState.getSelf()[i][0]+"-"+tState.getSelf()[i][1]+"-"+tState.getSelf()[i][2]);
+//                }
 
 
-            if(tState.getUp()!=null && cekContain(recur,tState.getUp())  ){
-                tState.setUp(null);
-
-            } else if(tState.getUp()!=null && !cekContain(recur,tState.getUp())){
-
-                recur.add(tState.getUp());
             }
 
-            if(tState.getDown()!=null && cekContain(recur,tState.getDown())  ){
-                tState.setDown(null);
-
-            } else if( tState.getDown()!=null && !cekContain(recur,tState.getDown())){
-
-                recur.add(tState.getDown());
-            }
-
-
-//---------------------------------------------------------------------
-            if(tState.getDown()!=null){
-                queue.add(new State(tState.getDown()));
-
-            }
-            if(tState.getUp()!=null){
-                queue.add(new State(tState.getUp()));
-
-            }
-            if(tState.getLeft()!=null){
-                queue.add(new State(tState.getLeft()));
-
-            }
-            if(tState.getRight()!=null){
-                queue.add(new State(tState.getRight()));
-
-            }
 
         }
+        System.out.println("xit");
+
+
+
+    }
+    public Boolean cekWin(int[][] arr){
+        Boolean cek = true;
+        // kalo false dee engga sama
+        // kalo sama win
+        for(int i=0;i<3;i++){
+            for (int j=0;j<3;j++){
+                if(win[i][j]!=arr[i][j]){
+                    cek = false;
+                }
+            }
+        }
+        return cek;
     }
 
-        System.out.println("exit");
-    }
-
-    public Boolean cekContain(ArrayList<Integer[][]> list , Integer[][] state){
+    public Boolean cekContain(ArrayList<int[][]> list , int[][] state){
        // kalo false ga contain
+
         Boolean cek=false;
         for(int i=0;i<list.size();i++){
 
-            if(list.get(i) == state){
+            if(Arrays.deepEquals(list.get(i),state)){
                 cek=true;
                 break;
             }
@@ -319,7 +302,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-//        BFS();
+        BFS();
 
 
     }
