@@ -34,6 +34,16 @@ public class Node implements Cloneable {
         this.zeroIndex = zeroIndex;
     }
 
+    public static int getInvCount(Integer[][] arr)
+    {
+        int inv_count = 0;
+        for (int i = 0; i < 3 - 1; i++)
+            for (int j = i + 1; j < 3; j++)
+                if (arr[j][i] > 0 && arr[j][i] > arr[i][j])
+                    inv_count++;
+        return inv_count;
+    }
+
     @NonNull
     @Override
     protected Object clone() throws CloneNotSupportedException {
@@ -165,6 +175,21 @@ public class Node implements Cloneable {
             }
         }
         else if (cara.equalsIgnoreCase("bfs"))
+        {
+            if(n.CanMoveUp()) {
+                n.children.add(Node.MoveUp(n));
+            }
+            if (n.CanMoveDown()) {
+                n.children.add(Node.MoveDown(n));
+            }
+            if (n.CanMoveLeft()) {
+                n.children.add(Node.MoveLeft(n));
+            }
+            if (n.CanMoveRight()) {
+                n.children.add(Node.MoveRight(n));
+            }
+        }
+        else if (cara.equalsIgnoreCase("iterativeDeepening"))
         {
             if(n.CanMoveUp()) {
                 n.children.add(Node.MoveUp(n));

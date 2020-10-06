@@ -13,6 +13,8 @@ import java.util.Stack;
 public class Solver {
     public static ArrayList<Integer[][]> visitedNode = new ArrayList<>();
 
+    public static int BatasIterasi = 10000;
+
     public static String BFS(Integer[][] node)
     {
         visitedNode.clear(); // ClOSE
@@ -23,6 +25,7 @@ public class Solver {
         processedNode.add(n);
         visitedNode.add(n.state);
 
+        int batas = 0;
         while(!processedNode.isEmpty())
         {
             n = processedNode.peek();
@@ -39,8 +42,18 @@ public class Solver {
                     visitedNode.add(child.state);
                     processedNode.add(child);
                 }
+                else
+                {
+                    System.out.println("Found recurring BFS");
+                }
             }
-            System.out.println( String.format("Node size : %s", processedNode.size()) );
+            //System.out.println( String.format("Node size : %s", processedNode.size()) );
+            batas++;
+            if (batas >= Solver.BatasIterasi)
+            {
+                //System.out.println(" Sampai Batas ");
+                return "solve tidak ditemukan";
+            }
         }
         if (solution != null)
         {
@@ -58,14 +71,10 @@ public class Solver {
                 totalCost += s.cost;
                 jwban += s.move + " ";
             }
-            System.out.println( String.format("Move %s, Total Cost", jwban, totalCost) );
+            //System.out.println( String.format("Move %s, Total Cost", jwban, totalCost) );
             return jwban;
         }
-        else
-        {
-            System.out.println(" Tidak bisa solving ");
-            return "solve tidak ditemukan";
-        }
+        return "solve tidak ditemukan";
     }
     public static String Astar(Integer[][] node)
     {
@@ -76,6 +85,7 @@ public class Solver {
         NodeProcessed.add(n);
         visitedNode.add(n.state);
 
+        int batas = 0;
         while(!NodeProcessed.isEmpty())
         {
             int priority;
@@ -94,8 +104,18 @@ public class Solver {
                     visitedNode.add(v.state);
                     NodeProcessed.add(v);
                 }
+                else
+                {
+                    System.out.println("Found recurring A*");
+                }
             }
-            System.out.println( String.format("Depth: %s priority : %s", n.depth, priority) );
+            //System.out.println( String.format("Depth: %s priority : %s", n.depth, priority) );
+            batas++;
+            if (batas > Solver.BatasIterasi)
+            {
+                //System.out.println(" Sampai Batas ");
+                return "Tidak Bisa Solving";
+            }
         }
         if (solution != null)
         {
@@ -113,13 +133,43 @@ public class Solver {
                 totalCost += s.cost;
                 jwban += s.move + " ";
             }
-            System.out.println( String.format("Move %s Total Cost %s", jwban,totalCost) );
+            //System.out.println( String.format("Move %s Total Cost %s", jwban,totalCost) );
             return jwban;
         }
-        else
+        return "solve tidak ditemukan";
+    }
+    public static String IterativeDeepening(Integer[][] node)
+    {
+        Stack<Node> visitedNode = new Stack<>();
+        Stack<Node> processedNode = new Stack<>();
+        Node solution = null;
+        Node n = new Node(null,node,0,0,"");
+        processedNode.add(n);
+        int depthlimit = 0;
+        while(!processedNode.isEmpty())
         {
-            System.out.println(" Tidak bisa solving ");
-            return "Tidak Bisa Solving";
+            if (Node.getInvCount(n.state) % 2 != 0 )
+            {
+                return "";
+            }
+            n = processedNode.pop();
+            visitedNode.add(n);
+            if (n.isGoal())
+            {
+                solution = n;
+                break;
+            }
+            if (depthlimit > n.depth)
+                Node.GeneratePossibleChildren(n,"iterativeDeepening");
+            depthlimit += 1;
+
+            for (Node v : n.children ) {
+                if (!visitedNode.contains(v))
+                {
+                    processedNode.add(v);
+                }
+            }
         }
+        return null;
     }
 }

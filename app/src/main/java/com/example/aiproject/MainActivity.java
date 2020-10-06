@@ -4,8 +4,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.PopupMenu;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -25,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     protected Integer[] numbers = {0,1,2,3,4,5,6,7,8};
     protected Integer[][] boards = {{-1,-1,-1},{-1,-1,-1},{-1,-1,-1}}; // board = posisi number
     protected static final Integer[][] GOAL_STATE = {{1,2,3},{4,5,6},{7,8,0}}; // GOAL STATE
+    TextView txtMove;
 
     /*
     * STATE CLASS
@@ -47,9 +51,11 @@ public class MainActivity extends AppCompatActivity {
         bSolve = findViewById(R.id.buttonSolve);
         bReset = findViewById(R.id.buttonReset);
 
+        txtMove = findViewById(R.id.txtMove);
+
         Reset();
         RefreshBoard();
-
+        txtMove.setText("");
     }
 
     public void butClick(View v)
@@ -60,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         int id = v.getId();
         if(id == R.id.buttonSolve)
         {
-            Solve();
+            Solve(v);
         }
         else if (id == R.id.buttonReset)
         {
@@ -151,24 +157,62 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // a = a^b^(b = a); SWAP
-    public void Solve()
+    public void Solve(View v)
     {
         /*
         * To Be Added Solver function
         * BFS
-        * DFS
+        * A* with heuristic
+        *
         * (+)
         * */
-        //Toast.makeText(this,Solver.BFS(boards),Toast.LENGTH_LONG).show();
-        //Toast.makeText(this,Solver.Astar(boards),Toast.LENGTH_LONG).show();
-
-/*        new Thread(new Runnable() {
-            public void run() {
-                // a potentially time consuming task
-                //Solver.Astar(boards);
+        //
+        //
+        PopupMenu popup = new PopupMenu(MainActivity.this, v);
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.menu_bfs:
+                        // do your
+                        BFS();
+                        return true;
+                    case R.id.menu_astar:
+                        // do your code
+                        Astar();
+                        return true;
+                    default:
+                        return false;
+                }
             }
-        }).start();*/
+        });
+        popup.inflate(R.menu.solver_menu);
+        popup.show();
     }
+
+    private void MoveSelf(String s)
+    {
+        new Thread(new Runnable() {
+            public void run() {
+
+            }
+        }).start();
+    }
+
+    private void BFS()
+    {
+        String s = Solver.BFS(boards);
+        Toast.makeText(this,s,Toast.LENGTH_LONG).show();
+        txtMove.setText(s);
+    }
+
+    private void Astar()
+    {
+        String s = Solver.Astar(boards);
+        Toast.makeText(this,s,Toast.LENGTH_LONG).show();
+        txtMove.setText(s);
+    }
+
 
     public void Reset()
     {
