@@ -140,36 +140,53 @@ public class Solver {
     }
     public static String IterativeDeepening(Integer[][] node)
     {
-        Stack<Node> visitedNode = new Stack<>();
+        Stack<Node> checkedNode = new Stack<>();
         Stack<Node> processedNode = new Stack<>();
         Node solution = null;
         Node n = new Node(null,node,0,0,"");
         processedNode.add(n);
         int depthlimit = 0;
+
         while(!processedNode.isEmpty())
         {
-            if (Node.getInvCount(n.state) % 2 != 0 )
-            {
-                return "";
-            }
             n = processedNode.pop();
-            visitedNode.add(n);
+            checkedNode.add(n);
             if (n.isGoal())
             {
                 solution = n;
                 break;
             }
-            if (depthlimit > n.depth)
-                Node.GeneratePossibleChildren(n,"iterativeDeepening");
-            depthlimit += 1;
-
+            if (checkedNode.isEmpty())
+            {
+                depthlimit += 1;
+            }
+            checkedNode.clear();
+            Node.GeneratePossibleChildren(n,"iterativeDeepening");
             for (Node v : n.children ) {
-                if (!visitedNode.contains(v))
+                if (!checkedNode.contains(v))
                 {
                     processedNode.add(v);
+                    checkedNode.add(v);
                 }
             }
         }
-        return null;
+        if (solution != null)
+        {
+            Stack<Node> step = new Stack<>();
+            while(solution.parent != null)
+            {
+                step.push(solution);
+                solution = solution.parent;
+            }
+            String jwban = "";
+            while(!step.isEmpty())
+            {
+                Node s = step.pop();
+                jwban += s.move + " ";
+            }
+            //System.out.println( String.format("Move %s Total Cost %s", jwban,totalCost) );
+            return jwban;
+        }
+        return "Tidak Ditemukan";
     }
 }

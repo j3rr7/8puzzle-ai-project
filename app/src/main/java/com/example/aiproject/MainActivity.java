@@ -92,7 +92,6 @@ public class MainActivity extends AppCompatActivity {
             //System.out.println( String.format("DEBUGMOVE %s , %s", idx_now[0],idx_now[1]) );
 
             doMove(boards,idx_now[0],idx_now[1]); // Move Board
-
             RefreshBoard();
         }
     }
@@ -181,6 +180,9 @@ public class MainActivity extends AppCompatActivity {
                         // do your code
                         Astar();
                         return true;
+                    case R.id.menu_iterative:
+                        IterativeDeepening();
+                        return true;
                     default:
                         return false;
                 }
@@ -190,29 +192,24 @@ public class MainActivity extends AppCompatActivity {
         popup.show();
     }
 
-    private void MoveSelf(String s)
-    {
-        new Thread(new Runnable() {
-            public void run() {
-
-            }
-        }).start();
-    }
-
     private void BFS()
     {
         String s = Solver.BFS(boards);
         Toast.makeText(this,s,Toast.LENGTH_LONG).show();
         txtMove.setText(s);
     }
-
     private void Astar()
     {
         String s = Solver.Astar(boards);
         Toast.makeText(this,s,Toast.LENGTH_LONG).show();
         txtMove.setText(s);
     }
-
+    private void IterativeDeepening()
+    {
+        String s = Solver.IterativeDeepening(boards);
+        Toast.makeText(this,s,Toast.LENGTH_LONG).show();
+        txtMove.setText(s);
+    }
 
     public void Reset()
     {
