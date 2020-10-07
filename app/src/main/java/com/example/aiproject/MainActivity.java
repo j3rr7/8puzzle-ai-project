@@ -4,12 +4,21 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.PopupMenu;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.LinkedList;
+import java.util.PriorityQueue;
+import java.util.Stack;
 
 public class MainActivity extends AppCompatActivity {
     /*
@@ -18,6 +27,8 @@ public class MainActivity extends AppCompatActivity {
     protected Button b0,b1,b2,b3,b4,b5,b6,b7,b8,bSolve,bReset;
     protected Integer[] numbers = {0,1,2,3,4,5,6,7,8};
     protected Integer[][] boards = {{-1,-1,-1},{-1,-1,-1},{-1,-1,-1}}; // board = posisi number
+    protected static final Integer[][] GOAL_STATE = {{1,2,3},{4,5,6},{7,8,0}}; // GOAL STATE
+    TextView txtMove;
 
     /*
     * STATE CLASS
@@ -40,8 +51,11 @@ public class MainActivity extends AppCompatActivity {
         bSolve = findViewById(R.id.buttonSolve);
         bReset = findViewById(R.id.buttonReset);
 
+        txtMove = findViewById(R.id.txtMove);
+
         Reset();
         RefreshBoard();
+        txtMove.setText("");
     }
 
     public void butClick(View v)
@@ -52,11 +66,16 @@ public class MainActivity extends AppCompatActivity {
         int id = v.getId();
         if(id == R.id.buttonSolve)
         {
-            Solve();
+            Solve(v);
         }
         else if (id == R.id.buttonReset)
         {
             Reset();
+            RefreshBoard();
+        }
+        else if (id == R.id.button)
+        {
+            boards = new Integer[][]{{1, 2, 3}, {4, 5, 6}, {7, 8, 0}};
             RefreshBoard();
         }
         else
@@ -70,51 +89,63 @@ public class MainActivity extends AppCompatActivity {
             if (!num_.isEmpty())
                 num = Integer.parseInt(num_);
             int[] idx_now = getIndex2Dto2D(boards, num);
+            //System.out.println( String.format("DEBUGMOVE %s , %s", idx_now[0],idx_now[1]) );
 
-            System.out.println( String.format("DEBUGMOVE %s , %s", idx_now[0],idx_now[1]) );
-
-            // MOVE UP IF VALID
-            if (isValidMove(idx_now[0]+1,idx_now[1]))
-                MoveUp(boards, idx_now[0],idx_now[1]);
-            // MOVE DOWN IF VALID
-            if (isValidMove(idx_now[0]-1,idx_now[1]))
-                MoveDown(boards, idx_now[0],idx_now[1]);
-            // MOVE LEFT IF VALID
-            if (isValidMove(idx_now[0],idx_now[1]-1))
-                MoveLeft(boards,idx_now[0],idx_now[1]);
-            // MOVE RIGHT IF VALID
-            if (isValidMove(idx_now[0],idx_now[1]+1))
-                MoveRight(boards,idx_now[0],idx_now[1]);
+            doMove(boards,idx_now[0],idx_now[1]); // Move Board
             RefreshBoard();
         }
     }
 
+    private void doMove(Integer[][] boards, int x, int y)
+    {
+        // MOVE UP IF VALID
+        MoveUp(boards, x,y);
+        // MOVE DOWN IF VALID
+        MoveDown(boards, x,y);
+        // MOVE LEFT IF VALID
+        MoveLeft(boards,x,y);
+        // MOVE RIGHT IF VALID
+        MoveRight(boards,x,y);
+    }
+
     private void MoveUp(Integer[][] boards, int x, int y)
     {
-        if (boards[x+1][y] == 0)
+        if (isValidMove(x+1,y))
         {
-            boards[x][y] = boards[x][y]^boards[x+1][y]^(boards[x+1][y] = boards[x][y]); //SWAP
+            if (boards[x+1][y] == 0)
+            {
+                boards[x][y] = boards[x][y]^boards[x+1][y]^(boards[x+1][y] = boards[x][y]); //SWAP
+            }
         }
     }
     private void MoveDown(Integer[][] boards, int x, int y)
     {
-        if (boards[x-1][y] == 0)
+        if (isValidMove(x-1,y))
         {
-            boards[x][y] = boards[x][y]^boards[x-1][y]^(boards[x-1][y] = boards[x][y]); //SWAP
+            if (boards[x-1][y] == 0)
+            {
+                boards[x][y] = boards[x][y]^boards[x-1][y]^(boards[x-1][y] = boards[x][y]); //SWAP
+            }
         }
     }
     private void MoveLeft(Integer[][] boards, int x, int y)
     {
-        if (boards[x][y-1] == 0)
+        if (isValidMove(x,y-1))
         {
-            boards[x][y] = boards[x][y]^boards[x][y-1]^(boards[x][y-1] = boards[x][y]); //SWAP
+            if (boards[x][y-1] == 0)
+            {
+                boards[x][y] = boards[x][y]^boards[x][y-1]^(boards[x][y-1] = boards[x][y]); //SWAP
+            }
         }
     }
     private void MoveRight(Integer[][] boards, int x, int y)
     {
-        if (boards[x][y+1] == 0)
+        if (isValidMove(x,y+1))
         {
-            boards[x][y] = boards[x][y]^boards[x][y+1]^(boards[x][y+1] = boards[x][y]); //SWAP
+            if (boards[x][y+1] == 0)
+            {
+                boards[x][y] = boards[x][y]^boards[x][y+1]^(boards[x][y+1] = boards[x][y]); //SWAP
+            }
         }
     }
 
@@ -125,14 +156,59 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // a = a^b^(b = a); SWAP
-    public void Solve()
+    public void Solve(View v)
     {
         /*
         * To Be Added Solver function
         * BFS
-        * DFS
+        * A* with heuristic
+        *
         * (+)
         * */
+        //
+        //
+        PopupMenu popup = new PopupMenu(MainActivity.this, v);
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.menu_bfs:
+                        // do your
+                        BFS();
+                        return true;
+                    case R.id.menu_astar:
+                        // do your code
+                        Astar();
+                        return true;
+                    case R.id.menu_iterative:
+                        IterativeDeepening();
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        });
+        popup.inflate(R.menu.solver_menu);
+        popup.show();
+    }
+
+    private void BFS()
+    {
+        String s = Solver.BFS(boards);
+        Toast.makeText(this,s,Toast.LENGTH_LONG).show();
+        txtMove.setText(s);
+    }
+    private void Astar()
+    {
+        String s = Solver.Astar(boards);
+        Toast.makeText(this,s,Toast.LENGTH_LONG).show();
+        txtMove.setText(s);
+    }
+    private void IterativeDeepening()
+    {
+        String s = Solver.IterativeDeepening(boards);
+        Toast.makeText(this,s,Toast.LENGTH_LONG).show();
+        txtMove.setText(s);
     }
 
     public void Reset()
