@@ -53,7 +53,8 @@ public class MainActivity extends AppCompatActivity {
 
         txtMove = findViewById(R.id.txtMove);
 
-        Reset();
+        //Reset();
+        boards = new Integer[][]{{1, 2, 3}, {4, 5, 6}, {7, 8, 0}};
         RefreshBoard();
         txtMove.setText("");
     }

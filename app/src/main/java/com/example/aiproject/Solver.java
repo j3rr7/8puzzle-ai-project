@@ -13,7 +13,7 @@ import java.util.Stack;
 public class Solver {
     public static ArrayList<Integer[][]> visitedNode = new ArrayList<>();
 
-    public static int BatasIterasi = 10000;
+    public static int BatasIterasi = 100000;
 
     public static String BFS(Integer[][] node)
     {
@@ -146,7 +146,7 @@ public class Solver {
         Node n = new Node(null,node,0,0,"");
         processedNode.add(n);
         int depthlimit = 0;
-
+        int batas = 0;
         while(!processedNode.isEmpty())
         {
             n = processedNode.pop();
@@ -168,6 +168,11 @@ public class Solver {
                     processedNode.add(v);
                     checkedNode.add(v);
                 }
+            }
+            batas++;
+            if (batas > Solver.BatasIterasi)
+            {
+                return "Tidak Bisa Solving";
             }
         }
         if (solution != null)
